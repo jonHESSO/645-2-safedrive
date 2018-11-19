@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context=".ui.login.login_activity">
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <EditText
+        android:id="@+id/emailLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:layout_marginTop="50dp"
+        android:hint="Email" />
+
+
+    <EditText
+        android:id="@+id/pwdLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:layout_marginTop="100dp"
+        android:hint="Password" />
+
+    <Button
+        android:id="@+id/loginBtn"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/ColorWhite"
+        android:layout_marginTop="180dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Login" />
+
+    <Button
+        android:id="@+id/createAccountBtn"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/ColorWhite"
+        android:layout_marginTop="250dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Create an account" />
+
+</FrameLayout>
