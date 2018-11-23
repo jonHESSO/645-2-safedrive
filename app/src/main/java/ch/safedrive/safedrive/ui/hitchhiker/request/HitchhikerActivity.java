@@ -37,6 +37,6 @@ public class HitchhikerActivity extends AppCompatActivity implements CreateReque
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        
     }
 }
