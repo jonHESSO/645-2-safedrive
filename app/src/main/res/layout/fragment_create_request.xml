@@ -54,18 +54,15 @@
             android:text="@string/when"
             app:layout_constraintTop_toBottomOf="@+id/spinnerTo" />
 
-        <EditText
-            android:id="@+id/editTextWhen"
+        <TextView
+            android:id="@+id/textViewCurrentDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="114dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
-            android:ems="10"
-            android:hint="@string/picking_date"
-            android:inputType="date"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textViewHour"
             app:layout_constraintTop_toBottomOf="@+id/spinnerTo" />
+
     </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>
