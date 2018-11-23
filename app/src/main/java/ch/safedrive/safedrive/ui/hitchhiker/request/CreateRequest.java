@@ -6,15 +6,24 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import ch.safedrive.safedrive.R;
+import ch.safedrive.safedrive.firebase.PopulateFirebase;
+import ch.safedrive.safedrive.model.Location;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,12 +38,16 @@ public class CreateRequest extends Fragment {
     private String mCurrentDate;
     private OnFragmentInteractionListener mListener;
 
-    ImageButton btnTakingPicture;
+    private ImageButton btnTakingPicture;
+    private Button mBtnSubmit;
 
     private View view;
     private TextView mtextViewCurrentDate;
     private Spinner mSpinnerCityFrom, mSpinnerCityTo;
     private String mCityFrom, mCityTo;
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     public CreateRequest() {
         // Required empty public constructor
@@ -61,6 +74,7 @@ public class CreateRequest extends Fragment {
         if (getArguments() != null) {
             mCurrentDate = getArguments().getString(CURRENT_DATE);
         }
+
     }
 
     @Override
@@ -72,7 +86,7 @@ public class CreateRequest extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_create_request, container, false);
@@ -80,6 +94,14 @@ public class CreateRequest extends Fragment {
         // set the current date in the textview
         mtextViewCurrentDate = (TextView) view.findViewById(R.id.textViewCurrentDate);
         mtextViewCurrentDate.setText(mCurrentDate);
+
+        mBtnSubmit = (Button) view.findViewById(R.id.buttonSubmit);
+        mBtnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                storeRequest();
+            }
+        });
 
         btnTakingPicture = (ImageButton) view.findViewById(R.id.id_takingPicture);
         btnTakingPicture.setOnClickListener(new View.OnClickListener(){
@@ -93,16 +115,15 @@ public class CreateRequest extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-
+    public void storeRequest() {
         mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
         mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
         mCityFrom = mSpinnerCityFrom.getSelectedItem().toString();
         mCityTo = mSpinnerCityTo.getSelectedItem().toString();
+
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("requests");
+
 
     }
 
