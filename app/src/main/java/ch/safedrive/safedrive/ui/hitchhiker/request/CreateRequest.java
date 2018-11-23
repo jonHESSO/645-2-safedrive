@@ -1,12 +1,16 @@
 package ch.safedrive.safedrive.ui.hitchhiker.request;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import ch.safedrive.safedrive.R;
@@ -25,6 +29,8 @@ public class CreateRequest extends Fragment {
     private String mCurrentDate;
 
     private OnFragmentInteractionListener mListener;
+
+    ImageButton btnTakingPicture;
 
     private View view;
 
@@ -59,15 +65,31 @@ public class CreateRequest extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap bitmapTakingPicture = (Bitmap)data.getExtras().get("data");
+        btnTakingPicture.setImageBitmap(bitmapTakingPicture);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_create_request, container, false);
 
         // set the current date in the textview
         textViewCurrentDate = (TextView) view.findViewById(R.id.textViewCurrentDate);
         textViewCurrentDate.setText(mCurrentDate);
+
+        btnTakingPicture = (ImageButton) view.findViewById(R.id.id_takingPicture);
+        btnTakingPicture.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 0);
+            }
+        });
 
         return view;
     }
@@ -88,7 +110,6 @@ public class CreateRequest extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-
     }
 
     @Override
