@@ -1,7 +1,11 @@
 package ch.safedrive.safedrive.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.sql.Time;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Request {
 
@@ -25,6 +29,19 @@ public class Request {
         this.urlPlatePic = urlPlatePic;
     }
 
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("date", date);
+        result.put("time", time);
+        result.put("locationTo", locationTo);
+        result.put("locationFrom", locationFrom);
+        result.put("user", user);
+        result.put("plate", plate);
+        result.put("urlPlatePic", urlPlatePic);
+
+        return result;
+    }
 
     public Date getDate() {
         return date;
