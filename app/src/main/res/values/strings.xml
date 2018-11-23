@@ -28,4 +28,8 @@
     <string name="to">To</string>
     <string name="when">When</string>
     <string name="picking_date">Picking date</string>
+    <string name="txt_numPlate">Plate number</string>
+    <string name="txtView_numPlate">Plate number</string>
+    <string name="btnSubmit">Submit</string>
+
 </resources>
