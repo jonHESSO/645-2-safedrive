@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import ch.safedrive.safedrive.R;
@@ -25,16 +26,15 @@ import ch.safedrive.safedrive.R;
  */
 public class CreateRequest extends Fragment {
     private static final String CURRENT_DATE = "param1";
-
     private String mCurrentDate;
-
     private OnFragmentInteractionListener mListener;
 
     ImageButton btnTakingPicture;
 
     private View view;
-
-    private TextView textViewCurrentDate;
+    private TextView mtextViewCurrentDate;
+    private Spinner mSpinnerCityFrom, mSpinnerCityTo;
+    private String mCityFrom, mCityTo;
 
     public CreateRequest() {
         // Required empty public constructor
@@ -47,7 +47,6 @@ public class CreateRequest extends Fragment {
      * @param param1 Current date.
      * @return A new instance of fragment CreateRequest.
      */
-    // TODO: Rename and change types and number of parameters
     public static CreateRequest newInstance(String param1) {
         CreateRequest fragment = new CreateRequest();
         Bundle args = new Bundle();
@@ -79,8 +78,8 @@ public class CreateRequest extends Fragment {
         view = inflater.inflate(R.layout.fragment_create_request, container, false);
 
         // set the current date in the textview
-        textViewCurrentDate = (TextView) view.findViewById(R.id.textViewCurrentDate);
-        textViewCurrentDate.setText(mCurrentDate);
+        mtextViewCurrentDate = (TextView) view.findViewById(R.id.textViewCurrentDate);
+        mtextViewCurrentDate.setText(mCurrentDate);
 
         btnTakingPicture = (ImageButton) view.findViewById(R.id.id_takingPicture);
         btnTakingPicture.setOnClickListener(new View.OnClickListener(){
@@ -99,6 +98,12 @@ public class CreateRequest extends Fragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+
+        mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
+        mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
+        mCityFrom = mSpinnerCityFrom.getSelectedItem().toString();
+        mCityTo = mSpinnerCityTo.getSelectedItem().toString();
+
     }
 
     @Override

@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/textViewFrom"
+            android:id="@+id/textViewCityFrom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -20,31 +20,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
-            android:id="@+id/spinnerFrom"
+            android:id="@+id/spinnerCityFrom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:entries="@array/cities"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewFrom" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewCityFrom" />
 
         <TextView
-            android:id="@+id/textViewTo"
+            android:id="@+id/textViewCityTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/to"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerFrom" />
+            app:layout_constraintTop_toBottomOf="@+id/spinnerCityFrom" />
 
         <Spinner
-            android:id="@+id/spinnerTo"
+            android:id="@+id/spinnerCityTo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:entries="@array/cities"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTo" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewCityTo" />
 
         <TextView
             android:id="@+id/textViewHour"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/when"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerTo" />
+            app:layout_constraintTop_toBottomOf="@+id/spinnerCityTo" />
 
         <TextView
             android:id="@+id/textViewCurrentDate"
@@ -61,7 +61,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toEndOf="@+id/textViewHour"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerTo" />
+            app:layout_constraintTop_toBottomOf="@+id/spinnerCityTo" />
 
 
         <TextView

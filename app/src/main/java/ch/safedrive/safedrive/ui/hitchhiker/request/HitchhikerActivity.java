@@ -24,7 +24,6 @@ public class HitchhikerActivity extends AppCompatActivity implements CreateReque
 
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
-
     private String date_n = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
 
     @Override
