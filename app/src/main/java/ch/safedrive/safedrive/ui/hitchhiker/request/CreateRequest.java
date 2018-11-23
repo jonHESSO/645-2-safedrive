@@ -7,12 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import ch.safedrive.safedrive.R;
 
@@ -24,12 +26,15 @@ import ch.safedrive.safedrive.R;
  * Use the {@link CreateRequest#newInstance} factory method to
  * create an instance of this fragment.
  */
+
 public class CreateRequest extends Fragment {
     private static final String CURRENT_DATE = "param1";
     private String mCurrentDate;
     private OnFragmentInteractionListener mListener;
 
     ImageButton btnTakingPicture;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
 
     private View view;
     private TextView mtextViewCurrentDate;
@@ -66,8 +71,17 @@ public class CreateRequest extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmapTakingPicture = (Bitmap)data.getExtras().get("data");
-        btnTakingPicture.setImageBitmap(bitmapTakingPicture);
+
+        if(data != null){
+            Bitmap bitmapTakingPicture1 = (Bitmap) data.getExtras().get("data");
+
+
+            if (requestCode == REQUEST_IMAGE_CAPTURE && bitmapTakingPicture1 != null) {
+
+                Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
+                btnTakingPicture.setImageBitmap(bitmapTakingPicture);
+            }
+        }
 
     }
 
@@ -85,8 +99,8 @@ public class CreateRequest extends Fragment {
         btnTakingPicture.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 0);
+                Intent intentPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intentPicture, REQUEST_IMAGE_CAPTURE);
             }
         });
 
@@ -121,6 +135,13 @@ public class CreateRequest extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     /**

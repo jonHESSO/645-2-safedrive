@@ -20,9 +20,6 @@ import ch.safedrive.safedrive.R;
 
 public class HitchhikerActivity extends AppCompatActivity implements CreateRequest.OnFragmentInteractionListener {
 
-
-
-
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private String date_n = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
 
