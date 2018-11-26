@@ -65,7 +65,7 @@
 
 
         <TextView
-            android:id="@+id/id_NumPlate"
+            android:id="@+id/text_id_NumPlate"
             android:layout_width="wrap_content"
             android:layout_height="15dp"
             android:layout_marginTop="8dp"
@@ -80,8 +80,8 @@
             android:layout_marginTop="16dp"
             android:ems="10"
             android:hint="@string/txt_numPlate"
-            android:inputType="number"
-            app:layout_constraintTop_toBottomOf="@+id/id_NumPlate" />
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@+id/text_id_NumPlate" />
 
         <ImageButton
             android:id="@+id/id_takingPicture"
