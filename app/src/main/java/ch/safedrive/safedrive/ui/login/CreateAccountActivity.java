@@ -54,7 +54,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("users");
+        myRef = database.getReference("user");
 
         validateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,10 +84,12 @@ public class CreateAccountActivity extends AppCompatActivity {
                     InputFirstname.setError("Cannot be empty");
                     return;
                 }
-                if (TextUtils.isEmpty(phone)) {
+              /*  if (TextUtils.isEmpty(phone)) {
                     InputPhone.setError("Cannot be empty");
                     return;
-                }
+                }*/
+
+                storeUser();
 
                 firebaseAuth.createUserWithEmailAndPassword(email,password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -111,12 +113,9 @@ public class CreateAccountActivity extends AppCompatActivity {
         }*/
     }
 
-    public void storeUser(View view)
+    public void storeUser()
     {
        User user = new User(UUID.randomUUID().toString(), email,password,firstname,lastname,phone);
-       myRef.child("users").child(user.getId()).setValue(user);
-       Intent intent = new Intent(CreateAccountActivity.this, LoginActivity.class);
-       startActivity(intent);
-       finish();
+       myRef.child(user.getId()).setValue(user);
     }
 }

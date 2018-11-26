@@ -11,6 +11,8 @@ public class User {
     private String lastname;
     private String phoneNumber;
 
+    public User()
+    {}
 
     public User(String UID, String email, String password, String firstname, String lastname, String phoneNumber)
     {

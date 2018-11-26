@@ -134,7 +134,6 @@
             android:textAllCaps="true"
             android:textColor="@color/ColorWhite"
             android:layout_gravity="center_vertical|center_horizontal"
-            android:onClick="storeUser"
             />
 
     </LinearLayout>
