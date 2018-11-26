@@ -9,9 +9,10 @@ import java.util.Map;
 
 public class Request {
 
+    private String id;
     private Date date;
     private Time time;
-    private Location locationTo, locationFrom;
+    private String locationTo, locationFrom;
     private User user;
     private String plate, idPlatePic;
 
@@ -19,30 +20,40 @@ public class Request {
 
     }
 
-    public Request(Date date, Time time, Location locationTo, Location locationFrom, User user, String plate, String urlPlatePic) {
+    public Request(String id, Date date, Time time, String locationTo, String locationFrom, User user, String plate, String idPlatePic) {
+        this.id = id;
         this.date = date;
         this.time = time;
         this.locationTo = locationTo;
         this.locationFrom = locationFrom;
         this.user = user;
         this.plate = plate;
-        this.idPlatePic = urlPlatePic;
+        this.idPlatePic = idPlatePic;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
         result.put("date", date);
         result.put("time", time);
         result.put("locationTo", locationTo);
         result.put("locationFrom", locationFrom);
         result.put("user", user);
         result.put("plate", plate);
-        result.put("urlPlatePic", idPlatePic);
+        result.put("idPlatePic", idPlatePic);
 
         return result;
     }
-    
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public Date getDate() {
         return date;
     }
@@ -59,19 +70,19 @@ public class Request {
         this.time = time;
     }
 
-    public Location getLocationTo() {
+    public String getLocationTo() {
         return locationTo;
     }
 
-    public void setLocationTo(Location locationTo) {
+    public void setLocationTo(String locationTo) {
         this.locationTo = locationTo;
     }
 
-    public Location getLocationFrom() {
+    public String getLocationFrom() {
         return locationFrom;
     }
 
-    public void setLocationFrom(Location locationFrom) {
+    public void setLocationFrom(String locationFrom) {
         this.locationFrom = locationFrom;
     }
 
@@ -96,6 +107,6 @@ public class Request {
     }
 
     public void setIdPlatePic(String urlPlatePic) {
-        this.idPlatePic = urlPlatePic;
+        this.idPlatePic = idPlatePic;
     }
 }

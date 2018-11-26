@@ -6,11 +6,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -18,15 +18,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import ch.safedrive.safedrive.R;
@@ -52,6 +57,7 @@ public class CreateRequest extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private EditText mEditTextNumPlate;
     private String mIDPictureFireStore;
+    private String keyLocationFrom, keyLocationTo;
     private Button mBtnSubmit;
 
     private View view;
@@ -103,6 +109,9 @@ public class CreateRequest extends Fragment {
         mtextViewCurrentDate = (TextView) view.findViewById(R.id.textViewCurrentDate);
         mtextViewCurrentDate.setText(mCurrentDate);
 
+        // fill the spinner with locations
+        fillSpinnerLocations();
+
         mBtnSubmit = (Button) view.findViewById(R.id.buttonSubmit);
         mBtnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,16 +143,78 @@ public class CreateRequest extends Fragment {
         mCityTo = mSpinnerCityTo.getSelectedItem().toString();
         mEditTextNumPlate = view.findViewById(R.id.id_edit_numPlate);
 
+        database = FirebaseDatabase.getInstance();
+
+        myRef = database.getReference("locations");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot locationsSnapshot: dataSnapshot.getChildren()) {
+                    if(locationsSnapshot.child("name").getValue(String.class).equals(mSpinnerCityFrom.getSelectedItem().toString()));
+                        keyLocationFrom = locationsSnapshot.child("id").getValue(String.class);
+
+                    if(locationsSnapshot.child("name").getValue(String.class).equals(mSpinnerCityTo.getSelectedItem().toString()));
+                        keyLocationTo = locationsSnapshot.child("id").getValue(String.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         // create the new hitchhiker request and complete it
         Request mRequestHitchhiker = new Request();
+
+        mRequestHitchhiker.setId(UUID.randomUUID().toString());
         mRequestHitchhiker.setIdPlatePic(mIdPicture);
         mRequestHitchhiker.setPlate(mEditTextNumPlate.getText().toString());
+        mRequestHitchhiker.setDate(new Date());
+        mRequestHitchhiker.setLocationFrom(keyLocationFrom);
+        mRequestHitchhiker.setLocationTo(keyLocationTo);
 
         // add the request to firebase
         addRequestToFirebase (mRequestHitchhiker);
 
 
+    }
+
+    public void fillSpinnerLocations() {
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("locations");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final List<String> locationsFrom = new ArrayList<String>();
+                final List<String> locationsTo = new ArrayList<String>();
+
+                for (DataSnapshot locationsSnapshot: dataSnapshot.getChildren()) {
+                    if(locationsSnapshot.child("depart").getValue(Boolean.class) == true)
+                        locationsFrom.add(locationsSnapshot.child("name").getValue(String.class));
+
+                    if(locationsSnapshot.child("destination").getValue(Boolean.class) == true)
+                        locationsTo.add(locationsSnapshot.child("name").getValue(String.class));
+                }
+
+                Spinner locationFromSpinner = (Spinner) view.findViewById(R.id.spinnerCityFrom);
+                Spinner locationToSpinner = (Spinner) view.findViewById(R.id.spinnerCityTo);
+
+                ArrayAdapter<String> locationsToAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsFrom);
+                locationsToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                locationToSpinner.setAdapter(locationsToAdapter);
+
+                ArrayAdapter<String> locationsFromAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsTo);
+                locationsFromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                locationFromSpinner.setAdapter(locationsFromAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     // store the picture in firestore and return the id of the image stored
@@ -179,8 +250,7 @@ public class CreateRequest extends Fragment {
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("requests");
 
-        mRequestHitchhiker.setIdRequest(UUID.randomUUID().toString());
-        myRef.child(mRequestHitchhiker.getIdRequest())
+        myRef.child(mRequestHitchhiker.getId())
                 .setValue(mRequestHitchhiker);
     }
 

@@ -9,32 +9,43 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class Location {
 
+    private String id;
     private String name;
     private double longitude, latitude;
-    private Boolean isDepart, isDestination;
+    private Boolean depart, destination;
 
     public Location(){
 
     }
 
-    public Location (String name, double latitude, double longitude, Boolean isDepart, Boolean isDestination) {
+    public Location (String id, String name, double latitude, double longitude, Boolean depart, Boolean destination) {
+        this.id = id;
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.isDepart = isDepart;
-        this.isDestination = isDestination;
+        this.depart = depart;
+        this.destination = destination;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
         result.put("name", name);
         result.put("longitude", longitude);
         result.put("latitude", latitude);
-        result.put("isDepart", isDepart);
-        result.put("isDestination", isDestination);
+        result.put("depart", depart);
+        result.put("destination", destination);
 
         return result;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -62,18 +73,18 @@ public class Location {
     }
 
     public Boolean getDepart() {
-        return isDepart;
+        return depart;
     }
 
     public void setDepart(Boolean depart) {
-        isDepart = depart;
+        depart = depart;
     }
 
     public Boolean getDestination() {
-        return isDestination;
+        return destination;
     }
 
     public void setDestination(Boolean destination) {
-        isDestination = destination;
+        destination = destination;
     }
 }
