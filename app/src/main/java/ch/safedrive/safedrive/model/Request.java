@@ -42,7 +42,7 @@ public class Request {
 
         return result;
     }
-
+    
     public Date getDate() {
         return date;
     }

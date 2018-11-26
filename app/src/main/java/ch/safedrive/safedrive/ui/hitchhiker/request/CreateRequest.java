@@ -93,37 +93,6 @@ public class CreateRequest extends Fragment {
         }
     }
 
-    // receive the captured photo as a result
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //Control if a picture was taken
-        if(data != null){
-
-            // set a bitmap to control the content of the picutre taken
-            Bitmap mBitmapTakingControl = (Bitmap) data.getExtras().get("data");
-
-            // If the picture from the camera is really there
-            if (requestCode == REQUEST_IMAGE_CAPTURE && mBitmapTakingControl != null) {
-
-                // Get the path of the image
-                mUriFilePath = data.getData();
-
-                try {
-                    // Take this picture and put it in the image button
-                    Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
-                    mbtnTakingPicture.setImageBitmap(bitmapTakingPicture);
-
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -165,13 +134,15 @@ public class CreateRequest extends Fragment {
         mCityTo = mSpinnerCityTo.getSelectedItem().toString();
         mEditTextNumPlate = view.findViewById(R.id.id_edit_numPlate);
 
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("requests");
 
         // create the new hitchhiker request and complete it
         Request mRequestHitchhiker = new Request();
         mRequestHitchhiker.setIdPlatePic(mIdPicture);
         mRequestHitchhiker.setPlate(mEditTextNumPlate.getText().toString());
+
+        // add the request to firebase
+        addRequestToFirebase (mRequestHitchhiker);
+
 
     }
 
@@ -190,6 +161,7 @@ public class CreateRequest extends Fragment {
             // store the picture with an random id
             StorageReference ref = storageReference.child("license-plates/" + mIDPictureFireStore);
 
+            // put the file picture on firebase storage
             ref.putFile(mUriFilePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -199,6 +171,49 @@ public class CreateRequest extends Fragment {
         }
 
         return mIDPictureFireStore;
+    }
+
+
+    public void addRequestToFirebase(final Request mRequestHitchhiker){
+
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("requests");
+
+        mRequestHitchhiker.setIdRequest(UUID.randomUUID().toString());
+        myRef.child(mRequestHitchhiker.getIdRequest())
+                .setValue(mRequestHitchhiker);
+    }
+
+
+    // receive the captured photo as a result
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Control if a picture was taken
+        if(data != null){
+
+            // set a bitmap to control the content of the picutre taken
+            Bitmap mBitmapTakingControl = (Bitmap) data.getExtras().get("data");
+
+            // If the picture from the camera is really there
+            if (requestCode == REQUEST_IMAGE_CAPTURE && mBitmapTakingControl != null) {
+
+                // Get the path of the image
+                mUriFilePath = data.getData();
+
+                try {
+                    // Take this picture and put it in the image button
+                    Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
+                    mbtnTakingPicture.setImageBitmap(bitmapTakingPicture);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
     }
 
     @Override
