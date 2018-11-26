@@ -12,14 +12,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.IOException;
+import java.util.UUID;
 
 import ch.safedrive.safedrive.R;
 import ch.safedrive.safedrive.firebase.PopulateFirebase;
@@ -38,8 +46,10 @@ public class CreateRequest extends Fragment {
     private String mCurrentDate;
     private OnFragmentInteractionListener mListener;
 
-    ImageButton btnTakingPicture;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private ImageButton mbtnTakingPicture;
+    private Uri mUriFilePath;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private EditText mEditTextNumPlate;
 
     private Button mBtnSubmit;
 
@@ -50,6 +60,10 @@ public class CreateRequest extends Fragment {
 
     FirebaseDatabase database;
     DatabaseReference myRef;
+
+    // Access to firebase storage
+    FirebaseStorage storage;
+    StorageReference storageReference;
 
     public CreateRequest() {
         // Required empty public constructor
@@ -78,18 +92,32 @@ public class CreateRequest extends Fragment {
         }
     }
 
+    // receive the captured photo as a result
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //Control if a picture was taken
         if(data != null){
-            Bitmap bitmapTakingPicture1 = (Bitmap) data.getExtras().get("data");
 
+            // set a bitmap to control the content of the picutre taken
+            Bitmap mBitmapTakingControl = (Bitmap) data.getExtras().get("data");
 
-            if (requestCode == REQUEST_IMAGE_CAPTURE && bitmapTakingPicture1 != null) {
+            // If the picture from the camera is really there
+            if (requestCode == REQUEST_IMAGE_CAPTURE && mBitmapTakingControl != null) {
 
-                Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
-                btnTakingPicture.setImageBitmap(bitmapTakingPicture);
+                // Get the path of the image
+                mUriFilePath = data.getData();
+
+                try {
+                    // Take this picture and put it in the image button
+                    Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
+                    mbtnTakingPicture.setImageBitmap(bitmapTakingPicture);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         }
 
@@ -110,11 +138,13 @@ public class CreateRequest extends Fragment {
             @Override
             public void onClick(View v) {
                 storeRequest();
+                storeImagePlate();
             }
         });
 
-        btnTakingPicture = (ImageButton) view.findViewById(R.id.id_takingPicture);
-        btnTakingPicture.setOnClickListener(new View.OnClickListener(){
+        // When button to take a picture pressend, start the camera
+        mbtnTakingPicture = (ImageButton) view.findViewById(R.id.id_takingPicture);
+        mbtnTakingPicture.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 Intent intentPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -126,15 +156,37 @@ public class CreateRequest extends Fragment {
     }
 
     public void storeRequest() {
+
         mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
         mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
         mCityFrom = mSpinnerCityFrom.getSelectedItem().toString();
         mCityTo = mSpinnerCityTo.getSelectedItem().toString();
+        mEditTextNumPlate = view.findViewById(R.id.id_edit_numPlate);
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("requests");
 
+    }
 
+
+    public void storeImagePlate (){
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
+        if (mUriFilePath != null){
+            StorageReference ref = storageReference.child("license-plates/" + UUID.randomUUID().toString());
+
+            ref.putFile(mUriFilePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            Toast.makeText(CreateRequest.this.getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        }
     }
 
     @Override

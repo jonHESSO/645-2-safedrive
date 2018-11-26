@@ -10,6 +10,7 @@ import android.widget.*;
 import com.google.firebase.auth.FirebaseAuth;
 
 import ch.safedrive.safedrive.R;
+import ch.safedrive.safedrive.ui.hitchhiker.request.HitchhikerActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,6 +52,11 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // FOR CREATE A HITCHHIKER REQUEST
+                /*Intent intentHitchhikerRequest = new Intent (LoginActivity.this, HitchhikerActivity.class);
+                LoginActivity.this.startActivity(intentHitchhikerRequest);
+                */
                 finish();
             }
         });
