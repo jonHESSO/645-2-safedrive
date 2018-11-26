@@ -116,8 +116,8 @@ public class CreateRequest extends Fragment {
         mBtnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String mIdPictureFirestore = storeImagePlate();
-                storeRequest(mIdPictureFirestore);
+                storeImagePlate();
+                storeRequest();
 
             }
         });
@@ -135,7 +135,7 @@ public class CreateRequest extends Fragment {
         return view;
     }
 
-    public void storeRequest(String mIdPicture) {
+    public void storeRequest() {
 
         mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
         mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
@@ -169,7 +169,7 @@ public class CreateRequest extends Fragment {
         Request mRequestHitchhiker = new Request();
 
         mRequestHitchhiker.setId(UUID.randomUUID().toString());
-        mRequestHitchhiker.setIdPlatePic(mIdPicture);
+        mRequestHitchhiker.setIdPlatePic(mIDPictureFireStore);
         mRequestHitchhiker.setPlate(mEditTextNumPlate.getText().toString());
         mRequestHitchhiker.setDate(new Date());
         mRequestHitchhiker.setLocationFrom(keyLocationFrom);
@@ -218,7 +218,7 @@ public class CreateRequest extends Fragment {
     }
 
     // store the picture in firestore and return the id of the image stored
-    public String storeImagePlate (){
+    public void storeImagePlate (){
 
         // get the instance and references to firestore
         storage = FirebaseStorage.getInstance();
@@ -241,7 +241,6 @@ public class CreateRequest extends Fragment {
                     });
         }
 
-        return mIDPictureFireStore;
     }
 
 
