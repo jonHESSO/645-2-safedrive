@@ -54,9 +54,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // FOR CREATE A HITCHHIKER REQUEST
-                /*Intent intentHitchhikerRequest = new Intent (LoginActivity.this, HitchhikerActivity.class);
+                Intent intentHitchhikerRequest = new Intent (LoginActivity.this, HitchhikerActivity.class);
                 LoginActivity.this.startActivity(intentHitchhikerRequest);
-                */
+
                 finish();
             }
         });

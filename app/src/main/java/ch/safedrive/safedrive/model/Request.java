@@ -13,7 +13,7 @@ public class Request {
     private Time time;
     private Location locationTo, locationFrom;
     private User user;
-    private String plate, urlPlatePic;
+    private String plate, idPlatePic;
 
     public Request() {
 
@@ -26,7 +26,7 @@ public class Request {
         this.locationFrom = locationFrom;
         this.user = user;
         this.plate = plate;
-        this.urlPlatePic = urlPlatePic;
+        this.idPlatePic = urlPlatePic;
     }
 
     @Exclude
@@ -38,7 +38,7 @@ public class Request {
         result.put("locationFrom", locationFrom);
         result.put("user", user);
         result.put("plate", plate);
-        result.put("urlPlatePic", urlPlatePic);
+        result.put("urlPlatePic", idPlatePic);
 
         return result;
     }
@@ -91,11 +91,11 @@ public class Request {
         this.plate = plate;
     }
 
-    public String getUrlPlatePic() {
-        return urlPlatePic;
+    public String getIdPlatePic() {
+        return idPlatePic;
     }
 
-    public void setUrlPlatePic(String urlPlatePic) {
-        this.urlPlatePic = urlPlatePic;
+    public void setIdPlatePic(String urlPlatePic) {
+        this.idPlatePic = urlPlatePic;
     }
 }

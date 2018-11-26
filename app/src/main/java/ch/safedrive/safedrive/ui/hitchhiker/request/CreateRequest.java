@@ -32,6 +32,7 @@ import java.util.UUID;
 import ch.safedrive.safedrive.R;
 import ch.safedrive.safedrive.firebase.PopulateFirebase;
 import ch.safedrive.safedrive.model.Location;
+import ch.safedrive.safedrive.model.Request;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,7 +51,7 @@ public class CreateRequest extends Fragment {
     private Uri mUriFilePath;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private EditText mEditTextNumPlate;
-
+    private String mIDPictureFireStore;
     private Button mBtnSubmit;
 
     private View view;
@@ -137,8 +138,9 @@ public class CreateRequest extends Fragment {
         mBtnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                storeRequest();
-                storeImagePlate();
+                String mIdPictureFirestore = storeImagePlate();
+                storeRequest(mIdPictureFirestore);
+
             }
         });
 
@@ -155,7 +157,7 @@ public class CreateRequest extends Fragment {
         return view;
     }
 
-    public void storeRequest() {
+    public void storeRequest(String mIdPicture) {
 
         mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
         mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
@@ -166,27 +168,37 @@ public class CreateRequest extends Fragment {
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("requests");
 
+        // create the new hitchhiker request and complete it
+        Request mRequestHitchhiker = new Request();
+        mRequestHitchhiker.setIdPlatePic(mIdPicture);
+        mRequestHitchhiker.setPlate(mEditTextNumPlate.getText().toString());
+
     }
 
+    // store the picture in firestore and return the id of the image stored
+    public String storeImagePlate (){
 
-    public void storeImagePlate (){
-
+        // get the instance and references to firestore
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
         if (mUriFilePath != null){
-            StorageReference ref = storageReference.child("license-plates/" + UUID.randomUUID().toString());
+
+            // get a random id to store the picture
+            mIDPictureFireStore = UUID.randomUUID().toString();
+
+            // store the picture with an random id
+            StorageReference ref = storageReference.child("license-plates/" + mIDPictureFireStore);
 
             ref.putFile(mUriFilePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                            Toast.makeText(CreateRequest.this.getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
                         }
                     });
-
         }
+
+        return mIDPictureFireStore;
     }
 
     @Override
