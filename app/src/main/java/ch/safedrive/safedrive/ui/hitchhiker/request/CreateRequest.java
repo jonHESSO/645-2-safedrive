@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +17,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -102,7 +99,10 @@ public class CreateRequest extends Fragment {
         if (getArguments() != null) {
             mCurrentDate = getArguments().getString(CURRENT_DATE);
         }
+
         database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
     }
 
     @Override
@@ -234,10 +234,6 @@ public class CreateRequest extends Fragment {
     // store the picture in firestore and return the id of the image stored
     public void storeImagePlate () {
 
-        // get the instance and references to firestore
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
-
         if (mUriFilePath != null) {
 
             // get a random id to store the picture
@@ -251,6 +247,7 @@ public class CreateRequest extends Fragment {
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            System.out.println("Picture successfully uploaded!");
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
