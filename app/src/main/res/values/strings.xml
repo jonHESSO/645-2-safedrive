@@ -34,6 +34,7 @@
     <string name="txt_numPlate">Plate number</string>
     <string name="txtView_numPlate">Plate number</string>
     <string name="btnSubmit">Submit</string>
+    <string name="btnDestinationReached">Destination Reached</string>
 
     <!-- Register -->
     <string name="firstname">Firstname : </string>
