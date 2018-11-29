@@ -15,12 +15,13 @@ public class Request {
     private String locationTo, locationFrom;
     private User user;
     private String plate, idPlatePic;
+    private Boolean destinationReached;
 
     public Request() {
 
     }
 
-    public Request(String id, Date date, Time time, String locationTo, String locationFrom, User user, String plate, String idPlatePic) {
+    public Request(String id, Date date, Time time, String locationTo, String locationFrom, User user, String plate, String idPlatePic, Boolean destinationReached) {
         this.id = id;
         this.date = date;
         this.time = time;
@@ -29,6 +30,7 @@ public class Request {
         this.user = user;
         this.plate = plate;
         this.idPlatePic = idPlatePic;
+        this.destinationReached = destinationReached;
     }
 
     @Exclude
@@ -42,6 +44,7 @@ public class Request {
         result.put("user", user);
         result.put("plate", plate);
         result.put("idPlatePic", idPlatePic);
+        result.put("destinationReached", destinationReached);
 
         return result;
     }
@@ -109,4 +112,13 @@ public class Request {
     public void setIdPlatePic(String urlPlatePic) {
         this.idPlatePic = idPlatePic;
     }
+
+    public Boolean getDestinationReached() {
+        return destinationReached;
+    }
+
+    public void setDestinationReached(Boolean destinationReached) {
+        this.destinationReached = destinationReached;
+    }
+
 }
