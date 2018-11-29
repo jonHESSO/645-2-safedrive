@@ -22,7 +22,8 @@ import ch.safedrive.safedrive.R;
  * create an instance of this fragment.
  */
 public class MyTrip extends Fragment {
-    private static final String NUM_REQUEST = "param1";
+    private static String NUM_REQUEST = "param1";
+
     private String mNumRequest;
     private View view;
 
