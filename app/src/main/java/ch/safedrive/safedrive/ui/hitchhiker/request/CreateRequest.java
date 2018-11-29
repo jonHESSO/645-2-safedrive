@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -123,6 +126,7 @@ public class CreateRequest extends Fragment {
         mBtnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // store the request on firebase and go to the next fragment "myTrip"
                 storeRequest();
             }
         });
@@ -142,10 +146,8 @@ public class CreateRequest extends Fragment {
 
     public void storeRequest() {
 
-
         mCityFrom = mSpinnerCityFrom.getSelectedItem().toString();
         mCityTo = mSpinnerCityTo.getSelectedItem().toString();
-
 
         myRef = database.getReference("locations");
 
@@ -186,6 +188,9 @@ public class CreateRequest extends Fragment {
 
         // add the request to firebase
         addRequestToFirebase (mRequestHitchhiker);
+
+        MyTrip mt = MyTrip.newInstance(mRequestHitchhiker.getId());
+        getFragmentManager().beginTransaction().replace(R.id.flContent, mt).commit();
 
     }
 
@@ -257,14 +262,12 @@ public class CreateRequest extends Fragment {
         }
     }
 
-
     public void addRequestToFirebase(final Request mRequestHitchhiker){
 
         myRef = database.getReference("requests");
 
         myRef.child(mRequestHitchhiker.getId()).setValue(mRequestHitchhiker);
     }
-
 
     // receive the captured photo as a result
     @Override
@@ -294,7 +297,6 @@ public class CreateRequest extends Fragment {
 
             }
         }
-
     }
 
     @Override
@@ -327,5 +329,6 @@ public class CreateRequest extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+
     }
 }
