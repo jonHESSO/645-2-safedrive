@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,15 +29,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import ch.safedrive.safedrive.R;
-import ch.safedrive.safedrive.firebase.PopulateFirebase;
-import ch.safedrive.safedrive.model.Location;
 import ch.safedrive.safedrive.model.Request;
 
 /**
@@ -64,13 +64,15 @@ public class CreateRequest extends Fragment {
     private TextView mtextViewCurrentDate;
     private Spinner mSpinnerCityFrom, mSpinnerCityTo;
     private String mCityFrom, mCityTo;
+    private HashMap<String, String> locationsMapFrom = new HashMap<>();
+    private HashMap<String, String> locationsMapTo = new HashMap<>();
 
-    FirebaseDatabase database;
-    DatabaseReference myRef;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     // Access to firebase storage
-    FirebaseStorage storage;
-    StorageReference storageReference;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
 
     public CreateRequest() {
         // Required empty public constructor
@@ -97,6 +99,7 @@ public class CreateRequest extends Fragment {
         if (getArguments() != null) {
             mCurrentDate = getArguments().getString(CURRENT_DATE);
         }
+        database = FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -109,6 +112,10 @@ public class CreateRequest extends Fragment {
         mtextViewCurrentDate = (TextView) view.findViewById(R.id.textViewCurrentDate);
         mtextViewCurrentDate.setText(mCurrentDate);
 
+        mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
+        mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
+        mEditTextNumPlate = view.findViewById(R.id.id_edit_numPlate);
+
         // fill the spinner with locations
         fillSpinnerLocations();
 
@@ -116,9 +123,7 @@ public class CreateRequest extends Fragment {
         mBtnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                storeImagePlate();
                 storeRequest();
-
             }
         });
 
@@ -137,33 +142,37 @@ public class CreateRequest extends Fragment {
 
     public void storeRequest() {
 
-        mSpinnerCityFrom = view.findViewById(R.id.spinnerCityFrom);
-        mSpinnerCityTo = view.findViewById(R.id.spinnerCityTo);
+
         mCityFrom = mSpinnerCityFrom.getSelectedItem().toString();
         mCityTo = mSpinnerCityTo.getSelectedItem().toString();
-        mEditTextNumPlate = view.findViewById(R.id.id_edit_numPlate);
 
-        database = FirebaseDatabase.getInstance();
 
         myRef = database.getReference("locations");
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot locationsSnapshot: dataSnapshot.getChildren()) {
-                    if(locationsSnapshot.child("name").getValue(String.class).equals(mSpinnerCityFrom.getSelectedItem().toString()));
-                        keyLocationFrom = locationsSnapshot.child("id").getValue(String.class);
+        for(Map.Entry<String, String> entry : locationsMapFrom.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-                    if(locationsSnapshot.child("name").getValue(String.class).equals(mSpinnerCityTo.getSelectedItem().toString()));
-                        keyLocationTo = locationsSnapshot.child("id").getValue(String.class);
-                }
+            if(value.equals(mSpinnerCityFrom.getSelectedItem().toString())){
+                keyLocationFrom = key;
             }
+        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+        for(Map.Entry<String, String> entry : locationsMapTo.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
+            if(value.equals(mSpinnerCityTo.getSelectedItem().toString())){
+                keyLocationTo = key;
             }
-        });
+        }
+
+        try {
+            storeImagePlate();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
         // create the new hitchhiker request and complete it
         Request mRequestHitchhiker = new Request();
@@ -178,11 +187,9 @@ public class CreateRequest extends Fragment {
         // add the request to firebase
         addRequestToFirebase (mRequestHitchhiker);
 
-
     }
 
     public void fillSpinnerLocations() {
-        database = FirebaseDatabase.getInstance();
         myRef = database.getReference("locations");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -191,40 +198,42 @@ public class CreateRequest extends Fragment {
                 final List<String> locationsTo = new ArrayList<String>();
 
                 for (DataSnapshot locationsSnapshot: dataSnapshot.getChildren()) {
-                    if(locationsSnapshot.child("depart").getValue(Boolean.class) == true)
+                    if(locationsSnapshot.child("depart").getValue(Boolean.class)) {
                         locationsFrom.add(locationsSnapshot.child("name").getValue(String.class));
+                        locationsMapFrom.put(locationsSnapshot.child("id").getValue(String.class), locationsSnapshot.child("name").getValue(String.class));
+                    }
 
-                    if(locationsSnapshot.child("destination").getValue(Boolean.class) == true)
+
+                    if(locationsSnapshot.child("destination").getValue(Boolean.class)) {
                         locationsTo.add(locationsSnapshot.child("name").getValue(String.class));
+                        locationsMapTo.put(locationsSnapshot.child("id").getValue(String.class), locationsSnapshot.child("name").getValue(String.class));
+                    }
                 }
-
-                Spinner locationFromSpinner = (Spinner) view.findViewById(R.id.spinnerCityFrom);
-                Spinner locationToSpinner = (Spinner) view.findViewById(R.id.spinnerCityTo);
 
                 ArrayAdapter<String> locationsToAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsFrom);
                 locationsToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                locationToSpinner.setAdapter(locationsToAdapter);
+                mSpinnerCityFrom.setAdapter(locationsToAdapter);
 
                 ArrayAdapter<String> locationsFromAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsTo);
                 locationsFromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                locationFromSpinner.setAdapter(locationsFromAdapter);
+                mSpinnerCityTo.setAdapter(locationsFromAdapter);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                System.out.println(databaseError.getMessage());
             }
         });
     }
 
     // store the picture in firestore and return the id of the image stored
-    public void storeImagePlate (){
+    public void storeImagePlate () {
 
         // get the instance and references to firestore
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        if (mUriFilePath != null){
+        if (mUriFilePath != null) {
 
             // get a random id to store the picture
             mIDPictureFireStore = UUID.randomUUID().toString();
@@ -238,19 +247,22 @@ public class CreateRequest extends Fragment {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
                     });
         }
-
     }
 
 
     public void addRequestToFirebase(final Request mRequestHitchhiker){
 
-        database = FirebaseDatabase.getInstance();
         myRef = database.getReference("requests");
 
-        myRef.child(mRequestHitchhiker.getId())
-                .setValue(mRequestHitchhiker);
+        myRef.child(mRequestHitchhiker.getId()).setValue(mRequestHitchhiker);
     }
 
 
