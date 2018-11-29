@@ -185,6 +185,7 @@ public class CreateRequest extends Fragment {
         mRequestHitchhiker.setDate(new Date());
         mRequestHitchhiker.setLocationFrom(keyLocationFrom);
         mRequestHitchhiker.setLocationTo(keyLocationTo);
+        mRequestHitchhiker.setDestinationReached(false);
 
         // add the request to firebase
         addRequestToFirebase (mRequestHitchhiker);

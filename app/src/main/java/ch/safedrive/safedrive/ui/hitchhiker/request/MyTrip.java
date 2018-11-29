@@ -3,15 +3,24 @@ package ch.safedrive.safedrive.ui.hitchhiker.request;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import ch.safedrive.safedrive.R;
+import ch.safedrive.safedrive.model.Request;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,11 +31,17 @@ import ch.safedrive.safedrive.R;
  * create an instance of this fragment.
  */
 public class MyTrip extends Fragment {
-    private static final String NUM_REQUEST = "param1";
+    private static String NUM_REQUEST = "param1";
+
     private String mNumRequest;
     private View view;
-
+    private Button mButtonDestinationReached;
+    private Request hitchhikerRequest;
     private OnFragmentInteractionListener mListener;
+
+    // access to firebase database
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     public MyTrip() {
         // Required empty public constructor
@@ -53,8 +68,8 @@ public class MyTrip extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
-
         }
+        database = FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -64,7 +79,41 @@ public class MyTrip extends Fragment {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_my_trip, container, false);
 
-        String asdf = mNumRequest;
+        // get the reference for the pending request
+        myRef = database.getReference("requests").child(mNumRequest);
+
+        // retrieved the data for the hitchhicker resquest
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                hitchhikerRequest = dataSnapshot.getValue(Request.class);
+                hitchhikerRequest.setId(dataSnapshot.getKey());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        // button destination reached
+        mButtonDestinationReached = (Button) view.findViewById(R.id.buttonDestinationReached);
+        mButtonDestinationReached.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // if the user press on destination reached, the state of the button is set to True.
+                hitchhikerRequest.setDestinationReached(true);
+
+                // update in firebase the hitchhicker resquest
+                myRef.updateChildren(hitchhikerRequest.toMap(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                    }
+                });
+
+            }
+        });
 
         return view;
     }
