@@ -107,9 +107,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         });
             }
         });
-
-
-
+        
     }
 
     public void storeUser()
