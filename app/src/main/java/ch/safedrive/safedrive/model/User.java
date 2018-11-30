@@ -2,8 +2,6 @@ package ch.safedrive.safedrive.model;
 
 public class User {
 
-
-
     private String id;
     private String email;
     private String password;

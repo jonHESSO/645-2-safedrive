@@ -13,7 +13,7 @@ public class Request {
     private Date date;
     private Time time;
     private String locationTo, locationFrom;
-    private User user;
+    private String user;
     private String plate, idPlatePic;
     private Boolean destinationReached;
 
@@ -21,7 +21,7 @@ public class Request {
 
     }
 
-    public Request(String id, Date date, Time time, String locationTo, String locationFrom, User user, String plate, String idPlatePic, Boolean destinationReached) {
+    public Request(String id, Date date, Time time, String locationTo, String locationFrom, String user, String plate, String idPlatePic, Boolean destinationReached) {
         this.id = id;
         this.date = date;
         this.time = time;
@@ -89,11 +89,11 @@ public class Request {
         this.locationFrom = locationFrom;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 

@@ -20,6 +20,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -74,6 +76,8 @@ public class CreateRequest extends Fragment {
     private FirebaseStorage storage;
     private StorageReference storageReference;
 
+    private FirebaseUser user;
+
     public CreateRequest() {
         // Required empty public constructor
     }
@@ -103,6 +107,7 @@ public class CreateRequest extends Fragment {
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @Override
@@ -185,6 +190,7 @@ public class CreateRequest extends Fragment {
         mRequestHitchhiker.setDate(new Date());
         mRequestHitchhiker.setLocationFrom(keyLocationFrom);
         mRequestHitchhiker.setLocationTo(keyLocationTo);
+        mRequestHitchhiker.setUser(user.getUid());
         mRequestHitchhiker.setDestinationReached(false);
 
         // add the request to firebase
@@ -261,9 +267,7 @@ public class CreateRequest extends Fragment {
     }
 
     public void addRequestToFirebase(final Request mRequestHitchhiker){
-
         myRef = database.getReference("requests");
-
         myRef.child(mRequestHitchhiker.getId()).setValue(mRequestHitchhiker);
     }
 
