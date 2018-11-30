@@ -109,7 +109,7 @@ public class Request {
         return idPlatePic;
     }
 
-    public void setIdPlatePic(String urlPlatePic) {
+    public void setIdPlatePic(String idPlatePic) {
         this.idPlatePic = idPlatePic;
     }
 
