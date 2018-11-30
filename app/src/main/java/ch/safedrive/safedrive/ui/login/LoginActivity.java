@@ -33,8 +33,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            Intent intent = new Intent(LoginActivity.this, HitchhikerActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
 
 
         btnLogin = (Button) findViewById(R.id.loginBtn);

@@ -96,6 +96,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
+                                    storeUser();
                                     startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                                     finish();
                                 }
@@ -106,6 +107,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         });
             }
         });
+
 
 
     }
