@@ -108,14 +108,11 @@ public class CreateAccountActivity extends AppCompatActivity {
         });
 
 
-        /*if(firebaseAuth.getCurrentUser()!=null){
-            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-        }*/
     }
 
     public void storeUser()
     {
-       User user = new User(UUID.randomUUID().toString(), email,password,firstname,lastname,phone);
+       User user = new User(UUID.randomUUID().toString(), email,firstname,lastname,phone);
        myRef.child(user.getId()).setValue(user);
     }
 }
