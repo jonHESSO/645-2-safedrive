@@ -100,7 +100,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                                     finish();
                                 }
                                 else{
-                                    Toast.makeText(getApplicationContext(),"E-mail or password is wrong",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(),"E-mail already use",Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
