@@ -43,6 +43,8 @@ public class MyTrip extends Fragment {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
+    private Context context ;
+
     public MyTrip() {
         // Required empty public constructor
     }
@@ -66,6 +68,7 @@ public class MyTrip extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.context = this.getContext();
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
@@ -108,7 +111,7 @@ public class MyTrip extends Fragment {
                 myRef.updateChildren(hitchhikerRequest.toMap(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-
+                        Toast.makeText(context,"Destination reached : \nRequest closed",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
