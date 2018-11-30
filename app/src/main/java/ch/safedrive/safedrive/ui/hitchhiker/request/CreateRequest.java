@@ -243,6 +243,9 @@ public class CreateRequest extends Fragment {
 
         if (mUriFilePath != null) {
 
+            // set to null the id of the picture before to set an new id for the new picture
+            mIDPictureFireStore = null;
+
             // get a random id to store the picture
             mIDPictureFireStore = UUID.randomUUID().toString();
 

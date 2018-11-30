@@ -111,7 +111,6 @@ public class MyTrip extends Fragment {
 
                     }
                 });
-
             }
         });
 

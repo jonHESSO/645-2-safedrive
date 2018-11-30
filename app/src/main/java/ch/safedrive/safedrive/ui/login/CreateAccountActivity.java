@@ -89,18 +89,19 @@ public class CreateAccountActivity extends AppCompatActivity {
                     return;
                 }*/
 
-                storeUser();
+
 
                 firebaseAuth.createUserWithEmailAndPassword(email,password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
+                                    storeUser();
                                     startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                                     finish();
                                 }
                                 else{
-                                    Toast.makeText(getApplicationContext(),"E-mail or password is wrong",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(),"E-mail already exists",Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -108,14 +109,12 @@ public class CreateAccountActivity extends AppCompatActivity {
         });
 
 
-        /*if(firebaseAuth.getCurrentUser()!=null){
-            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-        }*/
+
     }
 
     public void storeUser()
     {
-       User user = new User(UUID.randomUUID().toString(), email,password,firstname,lastname,phone);
+       User user = new User(UUID.randomUUID().toString(), email,firstname,lastname,phone);
        myRef.child(user.getId()).setValue(user);
     }
 }
