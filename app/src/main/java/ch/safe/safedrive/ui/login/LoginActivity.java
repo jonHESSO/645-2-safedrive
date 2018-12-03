@@ -1,11 +1,10 @@
-package ch.safedrive.safedrive.ui.login;
+package ch.safe.safedrive.ui.login;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
@@ -13,11 +12,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import ch.safedrive.safedrive.R;
-import ch.safedrive.safedrive.ui.hitchhiker.request.CreateRequest;
-import ch.safedrive.safedrive.ui.hitchhiker.request.HitchhikerActivity;
+import ch.safe.safedrive.R;
+import ch.safe.safedrive.ui.hitchhiker.request.HitchhikerActivity;
 
 public class LoginActivity extends AppCompatActivity {
 

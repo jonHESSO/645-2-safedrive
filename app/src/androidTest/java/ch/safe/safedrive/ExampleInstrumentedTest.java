@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive;
+package ch.safe.safedrive;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

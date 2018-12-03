@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.model;
+package ch.safe.safedrive.model;
 
 public class User {
 

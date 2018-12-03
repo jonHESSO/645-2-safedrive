@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.ui.hitchhiker.request;
+package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.Manifest;
 import android.app.Activity;
@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import ch.safedrive.safedrive.R;
-import ch.safedrive.safedrive.model.Request;
+import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.Request;
 
 /**
  * A simple {@link Fragment} subclass.

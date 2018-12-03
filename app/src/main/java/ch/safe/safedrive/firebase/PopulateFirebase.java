@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.firebase;
+package ch.safe.safedrive.firebase;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import ch.safedrive.safedrive.model.Location;
+import ch.safe.safedrive.model.Location;
 
 public class PopulateFirebase {
 
