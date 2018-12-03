@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.model;
+package ch.safe.safedrive.model;
 
 import com.google.firebase.database.Exclude;
 

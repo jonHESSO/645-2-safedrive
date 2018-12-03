@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    tools:context=".ui.hitchhiker.request.CreateRequest">
+    tools:context="ch.safe.safedrive.ui.hitchhiker.request.CreateRequest">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

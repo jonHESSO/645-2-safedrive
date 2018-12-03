@@ -1,22 +1,16 @@
-package ch.safedrive.safedrive.ui.hitchhiker.request;
+package ch.safe.safedrive.ui.hitchhiker.request;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
 
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import ch.safedrive.safedrive.R;
+import ch.safe.safedrive.R;
 
 public class HitchhikerActivity extends AppCompatActivity implements CreateRequest.OnFragmentInteractionListener, MyTrip.OnFragmentInteractionListener{
 

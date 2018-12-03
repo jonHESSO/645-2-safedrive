@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.ui.hitchhiker.request;
+package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -19,8 +18,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import ch.safedrive.safedrive.R;
-import ch.safedrive.safedrive.model.Request;
+import ch.safe.safedrive.model.Request;
+import ch.safe.safedrive.R;
 
 /**
  * A simple {@link Fragment} subclass.

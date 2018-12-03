@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.ui.login;
+package ch.safe.safedrive.ui.login;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -18,9 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.UUID;
 
-import ch.safedrive.safedrive.R;
-import ch.safedrive.safedrive.model.User;
-import ch.safedrive.safedrive.ui.hitchhiker.request.CreateRequest;
+import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.User;
 
 public class CreateAccountActivity extends AppCompatActivity {
 

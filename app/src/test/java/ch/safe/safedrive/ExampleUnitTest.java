@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive;
+package ch.safe.safedrive;
 
 import org.junit.Test;
 
