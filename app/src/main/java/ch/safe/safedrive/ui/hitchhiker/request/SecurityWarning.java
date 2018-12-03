@@ -1,4 +1,4 @@
-package ch.safedrive.safedrive.ui.hitchhiker.request;
+package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ch.safedrive.safedrive.R;
+import ch.safe.safedrive.R;
 
 /**
  * A simple {@link Fragment} subclass.

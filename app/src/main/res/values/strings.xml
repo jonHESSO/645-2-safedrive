@@ -46,5 +46,6 @@
 
 
     <string name="validate">Validate</string>
+    <string name="btnShowLocation">Show Location</string>
 
 </resources>
