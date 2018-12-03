@@ -88,7 +88,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                     return;
                 }*/
 
-
+                storeUser();
 
                 firebaseAuth.createUserWithEmailAndPassword(email,password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -100,13 +100,12 @@ public class CreateAccountActivity extends AppCompatActivity {
                                     finish();
                                 }
                                 else{
-                                    Toast.makeText(getApplicationContext(),"E-mail already exists",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(),"E-mail already use",Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             }
         });
-
 
 
     }
