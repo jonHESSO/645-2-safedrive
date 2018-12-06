@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import ch.safe.safedrive.R;
 
@@ -21,12 +22,11 @@ import ch.safe.safedrive.R;
 public class DestinationReached_BadTrip extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String NUM_REQUEST = "numRequest";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private View mView;
+    private String mNumRequest;
+    private Button mBtnSendTestimony;
 
     private OnFragmentInteractionListener mListener;
 
@@ -38,16 +38,16 @@ public class DestinationReached_BadTrip extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param mNumRequest Parameter 1.
+
      * @return A new instance of fragment DestinationReached_BadTrip.
      */
     // TODO: Rename and change types and number of parameters
-    public static DestinationReached_BadTrip newInstance(String param1, String param2) {
+    public static DestinationReached_BadTrip newInstance(String mNumRequest) {
         DestinationReached_BadTrip fragment = new DestinationReached_BadTrip();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(NUM_REQUEST, mNumRequest);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +56,7 @@ public class DestinationReached_BadTrip extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mNumRequest = getArguments().getString(NUM_REQUEST);
         }
     }
 
@@ -65,7 +64,11 @@ public class DestinationReached_BadTrip extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_destination_reached__bad_trip, container, false);
+        mView = inflater.inflate(R.layout.fragment_destination_reached__bad_trip, container, false);
+
+        mBtnSendTestimony = (Button) mView.findViewById(R.id.button_sendTestimony);
+
+        return mView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import ch.safe.safedrive.R;
 
@@ -23,8 +24,10 @@ public class DestinationReached_GoodBad extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String NUM_REQUEST = "numRequest";
 
-    private View view;
-    private String numRequest;
+    private View mView;
+    private String mNumRequest;
+    private Button mBtnGood;
+    private Button mBtnBad;
 
     private OnFragmentInteractionListener mListener;
 
@@ -36,14 +39,14 @@ public class DestinationReached_GoodBad extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param numRequest Parameter 1.
+     * @param mNumRequest Parameter 1.
      * @return A new instance of fragment DestinationReached_GoodBad.
      */
     // TODO: Rename and change types and number of parameters
-    public static DestinationReached_GoodBad newInstance(String numRequest) {
+    public static DestinationReached_GoodBad newInstance(String mNumRequest) {
         DestinationReached_GoodBad fragment = new DestinationReached_GoodBad();
         Bundle args = new Bundle();
-        args.putString(NUM_REQUEST, numRequest);
+        args.putString(NUM_REQUEST, mNumRequest);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,7 +55,7 @@ public class DestinationReached_GoodBad extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            numRequest = getArguments().getString(NUM_REQUEST);
+            mNumRequest = getArguments().getString(NUM_REQUEST);
         }
     }
 
@@ -60,10 +63,46 @@ public class DestinationReached_GoodBad extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_destination_reached__good_bad, container, false);
+        mView = inflater.inflate(R.layout.fragment_destination_reached__good_bad, container, false);
 
-        return view;
+        onPressBtnGood();
+        onPressBtnBad();
+
+        return mView;
     }
+
+    // when the user press on the good button : means that the trip was good
+    public void onPressBtnGood(){
+        mBtnGood = (Button) mView.findViewById(R.id.buttonDestinationReached_Good);
+        mBtnGood.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                // start new framgent for the end of the create request
+                DestinationReached_End dest_end = DestinationReached_End.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_end).commit();
+            }
+
+        });
+
+    }
+
+    // when the user press on the bad button : means that he has a bad trip
+    public void onPressBtnBad(){
+        mBtnBad = (Button) mView.findViewById(R.id.buttonDestinationReached_Bad);
+        mBtnBad.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                // start new fragment in case of bad trip
+                DestinationReached_BadTrip dest_badTrip = DestinationReached_BadTrip.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_badTrip).commit();
+            }
+        });
+    }
+
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
