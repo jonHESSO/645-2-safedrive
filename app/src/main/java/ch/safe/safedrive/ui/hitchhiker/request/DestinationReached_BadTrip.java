@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,6 +35,7 @@ public class DestinationReached_BadTrip extends Fragment {
     private String mNumRequest;
     private Button mBtnSendTestimony;
     private Button mBtnCancel;
+    private TextView mTextViewTestimony;
 
     private OnFragmentInteractionListener mListener;
 
@@ -95,7 +97,17 @@ public class DestinationReached_BadTrip extends Fragment {
             @Override
             public void onClick(View v) {
 
+                // get the testimony entered by the user
+                mTextViewTestimony = mView.findViewById(R.id.editTextTestimony);
 
+                // create the bad experience trip
+                BadExperienceDuringTrip badExperienceDuringTrip = new BadExperienceDuringTrip();
+                badExperienceDuringTrip.setIdRequest(mNumRequest);
+                badExperienceDuringTrip.setTestimony(mTextViewTestimony.getText().toString());
+                badExperienceDuringTrip.setUser(user.getUid());
+
+                // add the bad trip to firebase
+                addBadTripToFirebase(badExperienceDuringTrip);
 
                 // start new framgent for the end of the create request
                 DestinationReached_End dest_end = DestinationReached_End.newInstance(mNumRequest);
