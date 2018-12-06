@@ -116,7 +116,7 @@ public class MyTrip extends Fragment {
 
                 // change fragment
                 DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
-                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb).commit();
+                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb, "destination_goodbad").commit();
             }
         });
 

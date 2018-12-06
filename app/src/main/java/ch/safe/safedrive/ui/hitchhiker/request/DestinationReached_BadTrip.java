@@ -27,6 +27,7 @@ public class DestinationReached_BadTrip extends Fragment {
     private View mView;
     private String mNumRequest;
     private Button mBtnSendTestimony;
+    private Button mBtnCancel;
 
     private OnFragmentInteractionListener mListener;
 
@@ -66,10 +67,38 @@ public class DestinationReached_BadTrip extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_destination_reached__bad_trip, container, false);
 
-        mBtnSendTestimony = (Button) mView.findViewById(R.id.button_sendTestimony);
+        onPressBtnSendTestimony();
+        onPressBtnCancel();
+
 
         return mView;
     }
+
+    public void onPressBtnSendTestimony(){
+        mBtnSendTestimony = (Button) mView.findViewById(R.id.button_sendTestimony);
+        mBtnSendTestimony.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                // start new framgent for the end of the create request
+                DestinationReached_End dest_end = DestinationReached_End.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_end).commit();
+            }
+        });
+    }
+
+    public void onPressBtnCancel(){
+        mBtnCancel = (Button) mView.findViewById(R.id.button_Cancel);
+        mBtnCancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStackImmediate();
+
+            }
+        });
+
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

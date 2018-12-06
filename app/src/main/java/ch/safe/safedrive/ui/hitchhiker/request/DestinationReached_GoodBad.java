@@ -96,7 +96,7 @@ public class DestinationReached_GoodBad extends Fragment {
 
                 // start new fragment in case of bad trip
                 DestinationReached_BadTrip dest_badTrip = DestinationReached_BadTrip.newInstance(mNumRequest);
-                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_badTrip).commit();
+                getFragmentManager().beginTransaction().add(R.id.flContent, dest_badTrip).hide(getFragmentManager().findFragmentByTag("destination_goodbad")).addToBackStack(null).commit();
             }
         });
     }
