@@ -212,6 +212,7 @@ public class CreateRequest extends Fragment {
         // add the request to firebase
         addRequestToFirebase (mRequestHitchhiker);
 
+        //Change fragment
         MyTrip mt = MyTrip.newInstance(mRequestHitchhiker.getId());
         getFragmentManager().beginTransaction().replace(R.id.flContent, mt).commit();
 

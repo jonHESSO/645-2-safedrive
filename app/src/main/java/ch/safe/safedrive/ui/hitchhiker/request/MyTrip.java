@@ -3,6 +3,7 @@ package ch.safe.safedrive.ui.hitchhiker.request;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.BinderThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -35,6 +36,7 @@ public class MyTrip extends Fragment {
     private String mNumRequest;
     private View view;
     private Button mButtonDestinationReached;
+    private Button mButtonReportProb;
     private Request hitchhikerRequest;
     private OnFragmentInteractionListener mListener;
 
@@ -94,6 +96,18 @@ public class MyTrip extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        //Button report a problem
+        mButtonReportProb = (Button) view.findViewById(R.id.btnReportProblem);
+        mButtonReportProb.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+
+                SecurityWarning sw = SecurityWarning.newInstance();
+                getFragmentManager().beginTransaction().replace(R.id.flContent, sw).commit();
             }
         });
 
