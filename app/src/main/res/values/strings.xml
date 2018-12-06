@@ -35,6 +35,7 @@
     <string name="txtView_numPlate">Plate number</string>
     <string name="btnSubmit">Submit</string>
     <string name="btnDestinationReached">Destination Reached</string>
+    <string name="btnReportProb">Report a problem</string>
 
     <!-- Register -->
     <string name="firstname">Firstname : </string>
@@ -58,7 +59,12 @@
     <string name="btnGoMenu">Go back to menu</string>
     <string name="btnLeaveApp">Leave the app</string>
 
+
     <string name="validate">Validate</string>
     <string name="btnShowLocation">Show Location</string>
+
+    <!-- Report problem-->
+    <string name="reportDriver">You can report a problem with a driver</string>
+    <string name="warningAdmin">Send an alert to the admin</string>
 
 </resources>

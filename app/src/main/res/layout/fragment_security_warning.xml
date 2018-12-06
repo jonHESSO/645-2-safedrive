@@ -3,12 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.hitchhiker.request.SecurityWarning">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reportDriver"
+        android:textColor="@color/ColorBlack"
+        android:textSize="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/btnWarningAdmin"
+        android:text="@string/warningAdmin"
+        android:background="@color/ColorRed"
+        android:layout_width="230dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="150dp"
+        android:textColor="@color/ColorWhite"
+        android:textAllCaps="true"
+        android:layout_gravity="center_horizontal"/>
 </FrameLayout>
