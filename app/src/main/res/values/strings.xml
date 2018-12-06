@@ -66,5 +66,8 @@
     <!-- Report problem-->
     <string name="reportDriver">You can report a problem with a driver</string>
     <string name="warningAdmin">Send an alert to the admin</string>
+    <string name="callPolice">Call 117</string>
+    <string name="returnTrip">Return to \"My Trip\"</string>
+    <string name="reportProb">Report a problem</string>
 
 </resources>
