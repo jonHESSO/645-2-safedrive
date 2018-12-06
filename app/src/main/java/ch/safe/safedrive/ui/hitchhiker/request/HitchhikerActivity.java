@@ -12,7 +12,7 @@ import java.util.Locale;
 
 import ch.safe.safedrive.R;
 
-public class HitchhikerActivity extends AppCompatActivity implements CreateRequest.OnFragmentInteractionListener, MyTrip.OnFragmentInteractionListener{
+public class HitchhikerActivity extends AppCompatActivity implements CreateRequest.OnFragmentInteractionListener, MyTrip.OnFragmentInteractionListener, DestinationReached_GoodBad.OnFragmentInteractionListener{
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private String date_n = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault()).format(new Date());

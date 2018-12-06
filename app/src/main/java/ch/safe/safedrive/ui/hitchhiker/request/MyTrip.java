@@ -135,6 +135,12 @@ public class MyTrip extends Fragment {
                         Toast.makeText(context,"Destination reached : \nRequest closed",Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                // when the user press on the  button "Destination Reached"
+                // start a new fragment for the Destination Reached view with 2 buttons Good and Bad
+                DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb).commit();
+
             }
         });
 
@@ -245,7 +251,7 @@ public class MyTrip extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 }
