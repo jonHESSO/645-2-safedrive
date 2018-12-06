@@ -9,7 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.BadExperienceDuringTrip;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +36,11 @@ public class DestinationReached_BadTrip extends Fragment {
     private Button mBtnCancel;
 
     private OnFragmentInteractionListener mListener;
+
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+    private FirebaseUser user;
+
 
     public DestinationReached_BadTrip() {
         // Required empty public constructor
@@ -59,6 +70,9 @@ public class DestinationReached_BadTrip extends Fragment {
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
+
+        database = FirebaseDatabase.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @Override
@@ -74,11 +88,14 @@ public class DestinationReached_BadTrip extends Fragment {
         return mView;
     }
 
+    // the user send the testimony to the firebase
     public void onPressBtnSendTestimony(){
         mBtnSendTestimony = (Button) mView.findViewById(R.id.button_sendTestimony);
         mBtnSendTestimony.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
+
 
                 // start new framgent for the end of the create request
                 DestinationReached_End dest_end = DestinationReached_End.newInstance(mNumRequest);
@@ -87,6 +104,7 @@ public class DestinationReached_BadTrip extends Fragment {
         });
     }
 
+    // the user press on the wrong button
     public void onPressBtnCancel(){
         mBtnCancel = (Button) mView.findViewById(R.id.button_Cancel);
         mBtnCancel.setOnClickListener(new View.OnClickListener(){
@@ -97,6 +115,12 @@ public class DestinationReached_BadTrip extends Fragment {
             }
         });
 
+    }
+
+    // add the trip to firebase
+    public void addBadTripToFirebase(final BadExperienceDuringTrip badExperienceDuringTrip){
+        myRef = database.getReference("badTripExperience");
+        myRef.child(badExperienceDuringTrip.getIdRequest()).setValue(badExperienceDuringTrip);
     }
 
 

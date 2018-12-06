@@ -1,6 +1,7 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -119,6 +121,7 @@ public class MyTrip extends Fragment {
 
         // button destination reached
         mButtonDestinationReached = (Button) view.findViewById(R.id.buttonDestinationReached);
+
         mButtonDestinationReached.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

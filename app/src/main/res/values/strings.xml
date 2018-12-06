@@ -56,7 +56,7 @@
     <string name="btnCancel">Cancel</string>
     <string name="ThankYouTravelling">Thank you for travelling with SafeDrive.</string>
     <string name="SeeYouSoon">See you soon!</string>
-    <string name="btnGoMenu">Go back to menu</string>
+    <string name="btnGoNewRequest">Go back to new request</string>
     <string name="btnLeaveApp">Leave the app</string>
 
 
