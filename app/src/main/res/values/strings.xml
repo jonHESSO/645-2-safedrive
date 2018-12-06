@@ -45,9 +45,23 @@
     <string name="pwdCA">Password : </string>
     <string name="createAccountTitle">Create an account</string>
 
+    <!-- Destination reached Bad/Good -->
+    <string name="btnGood">Good</string>
+    <string name="btnBad">Bad</string>
+    <string name="HowWasTrip">How was your trip ?</string>
+    <string name="TripGoWrong">Did your trip goes wrong?</string>
+    <string name="Why">Tell us why</string>
+    <string name="CommentBadTrip">Enter here your comments</string>
+    <string name="btnTestimony">Send my testimony</string>
+    <string name="btnCancel">Cancel</string>
+    <string name="ThankYouTravelling">Thank you for travelling with SafeDrive.</string>
+    <string name="SeeYouSoon">See you soon!</string>
+    <string name="btnGoMenu">Go back to menu</string>
+    <string name="btnLeaveApp">Leave the app</string>
 
 
     <string name="validate">Validate</string>
+    <string name="btnShowLocation">Show Location</string>
 
     <!-- Report problem-->
     <string name="reportDriver">You can report a problem with a driver</string>
