@@ -113,6 +113,10 @@ public class MyTrip extends Fragment {
                         Toast.makeText(context,"Destination reached : \nRequest closed",Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                // change fragment
+                DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb).commit();
             }
         });
 
