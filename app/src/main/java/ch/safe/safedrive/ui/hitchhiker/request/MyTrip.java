@@ -35,6 +35,7 @@ public class MyTrip extends Fragment {
     private String mNumRequest;
     private View view;
     private Button mButtonDestinationReached;
+    private Button mButtonReportProblem;
     private Request hitchhikerRequest;
     private OnFragmentInteractionListener mListener;
 
@@ -117,6 +118,16 @@ public class MyTrip extends Fragment {
                 // change fragment
                 DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
                 getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb, "destination_goodbad").commit();
+            }
+        });
+
+        //Button report problem
+        mButtonReportProblem = view.findViewById(R.id.buttonReportProblem);
+        mButtonReportProblem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SecurityWarning sw = SecurityWarning.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, sw).commit();
             }
         });
 

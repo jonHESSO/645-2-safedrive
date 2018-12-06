@@ -19,6 +19,11 @@ import ch.safe.safedrive.R;
  * create an instance of this fragment.
  */
 public class SecurityWarning extends Fragment {
+
+
+    private static final String NUM_REQUEST = "numRequest";
+    private String mNumRequest;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -40,12 +45,15 @@ public class SecurityWarning extends Fragment {
      *
      * @return A new instance of fragment SecurityWarning.
      */
-    public static SecurityWarning newInstance() {
+    public static SecurityWarning newInstance(String mNumRequest) {
         SecurityWarning fragment = new SecurityWarning();
         Bundle args = new Bundle();
+        args.putString(NUM_REQUEST, mNumRequest);
         fragment.setArguments(args);
         return fragment;
     }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
