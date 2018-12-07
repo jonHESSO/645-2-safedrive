@@ -8,46 +8,32 @@
     tools:context="ch.safe.safedrive.ui.hitchhiker.request.MyTrip">
 
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
         <Button
             android:id="@+id/buttonDestinationReached"
+            android:text="@string/btnDestinationReached"
+            android:background="@color/colorPrimary"
             android:layout_width="180dp"
             android:layout_height="51dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="248dp"
-            android:background="@color/colorPrimary"
-            android:text="@string/btnDestinationReached"
-            android:textAllCaps="true"
+            android:layout_marginTop="30dp"
             android:textColor="@color/ColorWhite"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.864" />
-
-
-        <Button
-            android:id="@+id/buttonReportProblem"
-            android:layout_width="180dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="96dp"
-            android:layout_marginEnd="8dp"
-            android:background="@color/ColorRed"
-            android:text="@string/btnReportProb"
             android:textAllCaps="true"
-            android:textColor="@color/ColorWhite"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonDestinationReached" />
+            android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/buttonReportProblem"
+        android:text="@string/btnDestinationReached"
+        android:background="@color/ColorRed"
+        android:layout_width="180dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="390dp"
+        android:textColor="@color/ColorWhite"
+        android:textAllCaps="true"
+        android:layout_gravity="center_horizontal"/>
 
 
-    </android.support.constraint.ConstraintLayout>
+
+
+
+ >
 
 </FrameLayout>
