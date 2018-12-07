@@ -1,6 +1,7 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,7 @@ public class SecurityWarning extends Fragment {
 
     private Button mBtnAlertAdmin;
     private Button mBtnReturnTrip;
+    private Button mBtnCallPolice;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,7 +97,23 @@ public class SecurityWarning extends Fragment {
             }
         });
 
+
+        //Button to call the police
+        mBtnCallPolice = view.findViewById(R.id.btnCallPolice);
+        mBtnCallPolice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callPolice("117");
+            }
+        });
+
+
         return view;
+    }
+
+    public void callPolice(final String phoneNumber)
+    {
+        startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null)));
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -15,7 +15,7 @@ import ch.safe.safedrive.R;
 public class HitchhikerActivity extends AppCompatActivity
         implements CreateRequest.OnFragmentInteractionListener, MyTrip.OnFragmentInteractionListener,
         DestinationReached_GoodBad.OnFragmentInteractionListener, DestinationReached_BadTrip.OnFragmentInteractionListener,
-        DestinationReached_End.OnFragmentInteractionListener{
+        DestinationReached_End.OnFragmentInteractionListener, SecurityWarning.OnFragmentInteractionListener, SecurityWarning_Admin.OnFragmentInteractionListener{
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private String date_n = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
