@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import ch.safe.safedrive.R;
 
@@ -19,16 +20,11 @@ import ch.safe.safedrive.R;
  * create an instance of this fragment.
  */
 public class DestinationReached_End extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private View mView;
+    private Button mBtnLeaveApp;
+    private Button mBtnBackNewRequest;
 
     public DestinationReached_End() {
         // Required empty public constructor
@@ -38,15 +34,11 @@ public class DestinationReached_End extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-
      * @return A new instance of fragment DestinationReached_End.
      */
-    // TODO: Rename and change types and number of parameters
-    public static DestinationReached_End newInstance(String param1) {
+    public static DestinationReached_End newInstance() {
         DestinationReached_End fragment = new DestinationReached_End();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
 
         fragment.setArguments(args);
         return fragment;
@@ -55,24 +47,46 @@ public class DestinationReached_End extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
 
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_destination_reached__end, container, false);
+        mView = inflater.inflate(R.layout.fragment_destination_reached__end, container, false);
+
+
+        // when the user want a new request
+        onPressBtnBackNewRequest();
+
+        // when the user want to leave the app
+        onPressBtnLeaveApp();
+
+
+        return mView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+
+    public void onPressBtnBackNewRequest(){
+
+        mBtnBackNewRequest = (Button) mView.findViewById(R.id.buttonNewRequest);
+
+
+    }
+
+    // when the user want to leave the app
+    public void onPressBtnLeaveApp(){
+
+        // get the button Leave App from view
+        mBtnLeaveApp = (Button) mView.findViewById(R.id.buttonLeaveApp);
+        mBtnLeaveApp.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                // exit the app
+                System.exit(0);
+            }
+        });
     }
 
     @Override
@@ -103,7 +117,7 @@ public class DestinationReached_End extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 }

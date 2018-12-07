@@ -20,8 +20,7 @@ import ch.safe.safedrive.R;
  * create an instance of this fragment.
  */
 public class DestinationReached_GoodBad extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // the fragment initialization parameters numRequest
     private static final String NUM_REQUEST = "numRequest";
 
     private View mView;
@@ -31,18 +30,18 @@ public class DestinationReached_GoodBad extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    // Required empty public constructor
     public DestinationReached_GoodBad() {
-        // Required empty public constructor
+
     }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param mNumRequest Parameter 1.
+     * @param mNumRequest Get the number of the current request.
      * @return A new instance of fragment DestinationReached_GoodBad.
      */
-    // TODO: Rename and change types and number of parameters
     public static DestinationReached_GoodBad newInstance(String mNumRequest) {
         DestinationReached_GoodBad fragment = new DestinationReached_GoodBad();
         Bundle args = new Bundle();
@@ -55,6 +54,7 @@ public class DestinationReached_GoodBad extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            // get the num request from the parameter
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
     }
@@ -65,7 +65,9 @@ public class DestinationReached_GoodBad extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_destination_reached__good_bad, container, false);
 
+        // when the user press on the button good
         onPressBtnGood();
+        // when the user press on the button bad
         onPressBtnBad();
 
         return mView;
@@ -73,13 +75,14 @@ public class DestinationReached_GoodBad extends Fragment {
 
     // when the user press on the good button : means that the trip was good
     public void onPressBtnGood(){
+        // get the button from the view
         mBtnGood = (Button) mView.findViewById(R.id.buttonDestinationReached_Good);
         mBtnGood.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
 
-                // start new framgent for the end of the create request
-                DestinationReached_End dest_end = DestinationReached_End.newInstance(mNumRequest);
+                // start new fragment for the end of the create request
+                DestinationReached_End dest_end = DestinationReached_End.newInstance();
                 getFragmentManager().beginTransaction().add(R.id.flContent, dest_end).hide(getFragmentManager().findFragmentByTag("destination_goodbad")).addToBackStack(null).commit();
             }
 
@@ -89,6 +92,7 @@ public class DestinationReached_GoodBad extends Fragment {
 
     // when the user press on the bad button : means that he has a bad trip
     public void onPressBtnBad(){
+        // get the bad button from the view
         mBtnBad = (Button) mView.findViewById(R.id.buttonDestinationReached_Bad);
         mBtnBad.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -99,16 +103,6 @@ public class DestinationReached_GoodBad extends Fragment {
                 getFragmentManager().beginTransaction().add(R.id.flContent, dest_badTrip).hide(getFragmentManager().findFragmentByTag("destination_goodbad")).addToBackStack(null).commit();
             }
         });
-    }
-
-
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -139,7 +133,6 @@ public class DestinationReached_GoodBad extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

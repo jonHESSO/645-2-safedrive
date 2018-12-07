@@ -42,7 +42,7 @@
 
 
         <Button
-            android:id="@+id/buttonGoMenu"
+            android:id="@+id/buttonNewRequest"
             android:layout_width="180dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
@@ -71,7 +71,7 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonGoMenu" />
+            app:layout_constraintTop_toBottomOf="@+id/buttonNewRequest" />
 
 
     </android.support.constraint.ConstraintLayout>

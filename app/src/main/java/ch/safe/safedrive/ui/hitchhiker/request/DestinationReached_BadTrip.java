@@ -27,8 +27,8 @@ import ch.safe.safedrive.model.BadExperienceDuringTrip;
  * create an instance of this fragment.
  */
 public class DestinationReached_BadTrip extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
+    // the fragment initialization parameters and get the number of the current request
     private static final String NUM_REQUEST = "numRequest";
 
     private View mView;
@@ -43,20 +43,19 @@ public class DestinationReached_BadTrip extends Fragment {
     private DatabaseReference myRef;
     private FirebaseUser user;
 
-
+    // Required empty public constructor
     public DestinationReached_BadTrip() {
-        // Required empty public constructor
+
     }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param mNumRequest Parameter 1.
+     * @param mNumRequest get the current number of the request.
 
      * @return A new instance of fragment DestinationReached_BadTrip.
      */
-    // TODO: Rename and change types and number of parameters
     public static DestinationReached_BadTrip newInstance(String mNumRequest) {
         DestinationReached_BadTrip fragment = new DestinationReached_BadTrip();
         Bundle args = new Bundle();
@@ -70,10 +69,13 @@ public class DestinationReached_BadTrip extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            // get the current number of the request from the parameter
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
 
+        // create the instance for the database in firebase
         database = FirebaseDatabase.getInstance();
+        // get the current user using the app
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
@@ -83,9 +85,10 @@ public class DestinationReached_BadTrip extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_destination_reached__bad_trip, container, false);
 
+        // button if the user want to send his testimony
         onPressBtnSendTestimony();
+        // if the user want to go back on the fragment desinationReached good bad
         onPressBtnCancel();
-
 
         return mView;
     }
@@ -110,13 +113,14 @@ public class DestinationReached_BadTrip extends Fragment {
                 addBadTripToFirebase(badExperienceDuringTrip);
 
                 // start new framgent for the end of the create request
-                DestinationReached_End dest_end = DestinationReached_End.newInstance(mNumRequest);
+                DestinationReached_End dest_end = DestinationReached_End.newInstance();
                 getFragmentManager().beginTransaction().replace(R.id.flContent, dest_end).commit();
             }
         });
     }
 
     // the user press on the wrong button
+    // go back to the fragment destinationReached GoodBad
     public void onPressBtnCancel(){
         mBtnCancel = (Button) mView.findViewById(R.id.button_Cancel);
         mBtnCancel.setOnClickListener(new View.OnClickListener(){
@@ -131,16 +135,10 @@ public class DestinationReached_BadTrip extends Fragment {
 
     // add the trip to firebase
     public void addBadTripToFirebase(final BadExperienceDuringTrip badExperienceDuringTrip){
+        // get the reference "badTripExperience" in firebase
         myRef = database.getReference("badTripExperience");
+        // save the BadExperienceDuringTrip testimony in the BadTripExperience in firebase
         myRef.child(badExperienceDuringTrip.getIdRequest()).setValue(badExperienceDuringTrip);
-    }
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -171,7 +169,6 @@ public class DestinationReached_BadTrip extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
