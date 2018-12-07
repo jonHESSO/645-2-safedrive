@@ -36,6 +36,7 @@
     <string name="btnSubmit">Submit</string>
     <string name="btnDestinationReached">Destination Reached</string>
     <string name="btnReportProb">Report a problem</string>
+    <string name="icon_marker_alt">\uF3C5</string>
 
     <!-- Register -->
     <string name="firstname">Firstname : </string>
