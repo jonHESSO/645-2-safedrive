@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.hitchhiker.request.DestinationReached_BadTrip">
 
-
-
     <TextView
         android:id="@+id/textViewTripGoWrong"
         android:layout_width="wrap_content"
@@ -32,8 +30,8 @@
 
     <EditText
         android:id="@+id/editTextTestimony"
-        android:layout_width="336dp"
-        android:layout_height="117dp"
+        android:layout_width="322dp"
+        android:layout_height="101dp"
         android:layout_marginLeft="18dp"
         android:layout_marginTop="150dp"
         android:ems="10"

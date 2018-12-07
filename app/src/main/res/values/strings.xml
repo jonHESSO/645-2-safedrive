@@ -59,6 +59,8 @@
     <string name="SeeYouSoon">See you soon!</string>
     <string name="btnGoNewRequest">Go back to new request</string>
     <string name="btnLeaveApp">Leave the app</string>
+    <string name="error_field_testimony">Please tell us what happened</string>
+
 
 
     <string name="validate">Validate</string>
