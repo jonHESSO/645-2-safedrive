@@ -74,14 +74,15 @@ public class DestinationReached_End extends Fragment {
             @Override
             public void onClick(View v) {
 
-                // remove all fragment stored in the fragment manager
-                for (Fragment fragment:getFragmentManager().getFragments()) {
+                /*
+                remove all fragment stored in the fragment manager
+                for (Fragment fragment:getFragmentManager().getFragments() {
                     getFragmentManager().beginTransaction().remove(fragment).commit();
                 }
+                */
 
-                // create a new Hitchhicker request !
-                Intent intent = new Intent(getActivity(), HitchhikerActivity.class);
-                startActivity(intent);
+                // start a new activity for a new request
+                getActivity().recreate();
             }
         });
     }

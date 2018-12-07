@@ -84,6 +84,7 @@ public class DestinationReached_GoodBad extends Fragment {
                 // start new fragment for the end of the create request
                 DestinationReached_End dest_end = DestinationReached_End.newInstance();
                 getFragmentManager().beginTransaction().add(R.id.flContent, dest_end).hide(getFragmentManager().findFragmentByTag("destination_goodbad")).addToBackStack(null).commit();
+                //getFragmentManager().beginTransaction().replace(R.id.flContent, dest_end).hide(getFragmentManager().findFragmentByTag("destination_goodbad")).addToBackStack(null).commit();
             }
 
         });
