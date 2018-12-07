@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,6 +37,8 @@ public class DestinationReached_BadTrip extends Fragment {
     private Button mBtnSendTestimony;
     private Button mBtnCancel;
     private TextView mTextViewTestimony;
+
+    private String nMessageError = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -73,6 +76,8 @@ public class DestinationReached_BadTrip extends Fragment {
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
 
+        // define the error message
+        nMessageError = getContext().getString(R.string.error_field_testimony);
         // create the instance for the database in firebase
         database = FirebaseDatabase.getInstance();
         // get the current user using the app
@@ -102,6 +107,13 @@ public class DestinationReached_BadTrip extends Fragment {
 
                 // get the testimony entered by the user
                 mTextViewTestimony = mView.findViewById(R.id.editTextTestimony);
+
+                // if the user didn't comment
+                if (mTextViewTestimony.getText().toString().length() == 0) {
+                    mTextViewTestimony.setError(nMessageError);
+                    mTextViewTestimony.requestFocus();
+                    return;
+                }
 
                 // create the bad experience trip
                 BadExperienceDuringTrip badExperienceDuringTrip = new BadExperienceDuringTrip();

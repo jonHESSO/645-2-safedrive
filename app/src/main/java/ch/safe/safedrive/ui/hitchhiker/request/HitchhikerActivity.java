@@ -1,5 +1,7 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
+import android.app.Fragment;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +30,7 @@ public class HitchhikerActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hitchhiker);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // create the fragment create request
         CreateRequest cr = CreateRequest.newInstance(date_n);
 
@@ -42,4 +44,11 @@ public class HitchhikerActivity extends AppCompatActivity
 
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+
+    }
 }

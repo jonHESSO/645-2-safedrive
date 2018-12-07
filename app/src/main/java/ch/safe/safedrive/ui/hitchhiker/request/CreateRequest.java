@@ -1,6 +1,7 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,13 +44,19 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.Location;
 import ch.safe.safedrive.model.Request;
 
 /**
@@ -70,6 +79,7 @@ public class CreateRequest extends Fragment {
     private String mIDPictureFireStore;
     private String keyLocationFrom, keyLocationTo;
     private Button mBtnSubmit;
+    private Button mBtnGetCurrentLocation;
 
     private View view;
     private TextView mtextViewCurrentDate;
@@ -77,6 +87,8 @@ public class CreateRequest extends Fragment {
     private String mCityFrom, mCityTo;
     private HashMap<String, String> locationsMapFrom = new HashMap<>();
     private HashMap<String, String> locationsMapTo = new HashMap<>();
+    ArrayAdapter<String> locationsToAdapter ;
+    ArrayAdapter<String> locationsFromAdapter ;
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
@@ -88,6 +100,22 @@ public class CreateRequest extends Fragment {
     private FirebaseUser user;
 
     private Context context ;
+    private Activity activity ;
+
+    int PERMISSION_ALL = 1;
+    static final int PERMISSION_STORAGE_CAMERABUTTON = 4 ;
+    static final int PERMISSION_LOCATION_LOCBUTTON = 3 ;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_SMS,
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    private LocationListener mLocationListener ;
+    private android.location.Location currentLocation ;
+    private LocationManager mLocationManager ;
 
 
     public CreateRequest() {
@@ -109,10 +137,12 @@ public class CreateRequest extends Fragment {
         return fragment;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.context = this.getContext() ;
+        this.activity = this.getActivity();
         if (getArguments() != null) {
             mCurrentDate = getArguments().getString(CURRENT_DATE);
         }
@@ -121,6 +151,35 @@ public class CreateRequest extends Fragment {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if(!hasPermissions(context, PERMISSIONS)){
+            requestPermissions(PERMISSIONS, PERMISSION_ALL);
+        }
+
+        mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(android.location.Location location) {
+                currentLocation = location ;
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+
+
     }
 
     @Override
@@ -149,20 +208,41 @@ public class CreateRequest extends Fragment {
             }
         });
 
+        mBtnGetCurrentLocation = (Button) view.findViewById(R.id.btnGetCurrentLocation);
+        mBtnGetCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onClick(View v) {
+                if(hasPermissions(context, PERMISSIONS[3]))
+                {
+                    getCurrentLocation();
+                }
+                else
+                    {
+                    requestPermissions(new String[]{PERMISSIONS[3]},3);
+                }
+            }
+        });
+
         // When button to take a picture pressend, start the camera
         mbtnTakingPicture = (ImageButton) view.findViewById(R.id.id_takingPicture);
         mbtnTakingPicture.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                if (checkPermissionREAD_EXTERNAL_STORAGE(context)) {
-                    Intent intentPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intentPicture, REQUEST_IMAGE_CAPTURE);
+                if (hasPermissions(context, PERMISSIONS[4])) {
+                    launchCamera();
+                }
+                else
+                {
+                    requestPermissions(new String[]{PERMISSIONS[4]}, PERMISSION_STORAGE_CAMERABUTTON);
                 }
 
             }
         });
 
+
         return view;
+
     }
 
     public void storeRequest() {
@@ -239,13 +319,13 @@ public class CreateRequest extends Fragment {
                     }
                 }
 
-                ArrayAdapter<String> locationsToAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsFrom);
+                locationsToAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsTo);
                 locationsToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                mSpinnerCityFrom.setAdapter(locationsToAdapter);
+                mSpinnerCityTo.setAdapter(locationsToAdapter);
 
-                ArrayAdapter<String> locationsFromAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsTo);
+                locationsFromAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, locationsFrom);
                 locationsFromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                mSpinnerCityTo.setAdapter(locationsFromAdapter);
+                mSpinnerCityFrom.setAdapter(locationsFromAdapter);
             }
 
             @Override
@@ -354,36 +434,9 @@ public class CreateRequest extends Fragment {
 
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
+   /*
 
-    public boolean checkPermissionREAD_EXTERNAL_STORAGE(
-            final Context context) {
-        int currentAPIVersion = Build.VERSION.SDK_INT;
-        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        (Activity) context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    showDialog("External storage", context,
-                            Manifest.permission.READ_EXTERNAL_STORAGE);
-
-                } else {
-                    ActivityCompat
-                            .requestPermissions(
-                                    (Activity) context,
-                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
-                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                }
-                return false;
-            } else {
-                return true;
-            }
-
-        } else {
-            return true;
-        }
-    }
+   //May be useful later for showing dialogs on older devices
 
     public void showDialog(final String msg, final Context context,
                            final String permission) {
@@ -403,15 +456,27 @@ public class CreateRequest extends Fragment {
         alert.show();
     }
 
+    */
+
+
+    //TODO : implement enable/disable of ui elements if permissions are granted/denied
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+            case PERMISSION_STORAGE_CAMERABUTTON:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // do your stuff
+                    launchCamera();
                 } else {
-                    Toast.makeText(context, "GET_ACCOUNTS Denied",
+                    Toast.makeText(context, "Storage access denied Denied",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case PERMISSION_LOCATION_LOCBUTTON:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getCurrentLocation();
+                } else {
+                    Toast.makeText(context, "Location access denied Denied",
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -420,4 +485,104 @@ public class CreateRequest extends Fragment {
                         grantResults);
         }
     }
+
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void launchCamera()
+    {
+        Intent intentPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intentPicture, REQUEST_IMAGE_CAPTURE);
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getCurrentLocation()
+    {
+
+        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, mLocationListener);
+
+        if(currentLocation == null)
+        {
+            Toast.makeText(context, "No known location", Toast.LENGTH_SHORT).show();
+            return ;
+        }
+        myRef = database.getReference("locations");
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final HashMap<String, Double> locationsFrom = new HashMap<>();
+
+                for (DataSnapshot locationsSnapshot : dataSnapshot.getChildren()) {
+                    if (locationsSnapshot.child("depart").getValue(Boolean.class)) {
+                        double distance = distance(currentLocation.getLatitude(), currentLocation.getLongitude(), (double)locationsSnapshot.child("latitude").getValue(), (double)locationsSnapshot.child("longitude").getValue());
+                        locationsFrom.put(locationsSnapshot.child("name").getValue(String.class), distance);
+                        locationsMapFrom.put(locationsSnapshot.child("id").getValue(String.class), locationsSnapshot.child("name").getValue(String.class));
+                    }
+                }
+
+                Map.Entry closestEntry = entriesSortedByValues(locationsFrom).first();
+                if ((double)closestEntry.getValue() <= 5)
+                {
+                    int position = locationsFromAdapter.getPosition((String)closestEntry.getKey());
+                    mSpinnerCityFrom.setSelection(position,true);
+                }
+                else{
+                    Toast.makeText(context,"No nearby depart points", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println(databaseError.getMessage());
+            }
+
+        });
+    }
+
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 6371; //
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double dist = earthRadius * c;
+
+        return dist;
+    }
+
+    static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+                new Comparator<Map.Entry<K,V>>() {
+                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                        int res = e1.getValue().compareTo(e2.getValue());
+                        return res != 0 ? res : 1;
+                    }
+                }
+        );
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
+    }
+
+
+
 }

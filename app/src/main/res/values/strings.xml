@@ -36,6 +36,7 @@
     <string name="btnSubmit">Submit</string>
     <string name="btnDestinationReached">Destination Reached</string>
     <string name="btnReportProb">Report a problem</string>
+    <string name="icon_marker_alt">\uF3C5</string>
 
     <!-- Register -->
     <string name="firstname">Firstname : </string>
@@ -58,6 +59,8 @@
     <string name="SeeYouSoon">See you soon!</string>
     <string name="btnGoNewRequest">Go back to new request</string>
     <string name="btnLeaveApp">Leave the app</string>
+    <string name="error_field_testimony">Please tell us what happened</string>
+
 
 
     <string name="validate">Validate</string>
