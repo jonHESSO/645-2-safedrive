@@ -1,7 +1,9 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -29,8 +31,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import ch.safe.safedrive.model.Request;
@@ -57,12 +62,14 @@ public class MyTrip extends Fragment {
     private LocationManager lm;
     private Location location, destinationLocation;
     private Double lat, lng;
+    private LocationListener locationListener;
+    private HashMap<Date, Location> locationHashMap = new HashMap<>();
 
     // access to firebase database
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
-    private Context context ;
+    private Context context;
 
     public MyTrip() {
         // Required empty public constructor
@@ -99,14 +106,14 @@ public class MyTrip extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        view =  inflater.inflate(R.layout.fragment_my_trip, container, false);
+        view = inflater.inflate(R.layout.fragment_my_trip, container, false);
 
         //Button report problem
         mButtonReportProblem = view.findViewById(R.id.buttonReportProblem);
         mButtonReportProblem.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick (View view){
+            public void onClick(View view) {
                 SecurityWarning sw = SecurityWarning.newInstance(mNumRequest);
                 getFragmentManager().beginTransaction().replace(R.id.flContent, sw, "security_warning").commit();
             }
@@ -127,10 +134,8 @@ public class MyTrip extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        lat = dataSnapshot.child("latitude"). getValue(Double .class);
-                        lng = dataSnapshot.child("longitude").getValue(Double .class);
-
-                        System.out.println(lat + " ========================= "+ lng);
+                        lat = dataSnapshot.child("latitude").getValue(Double.class);
+                        lng = dataSnapshot.child("longitude").getValue(Double.class);
 
                         destinationLocation = new Location("");
                         destinationLocation.setLatitude(lat);
@@ -149,6 +154,7 @@ public class MyTrip extends Fragment {
                 myRef.addValueEventListener(valueEventListenerDestination);
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -164,19 +170,8 @@ public class MyTrip extends Fragment {
             @Override
             public void onClick(View v) {
 
-                // get the reference for the pending request
-                myRef = database.getReference("requests").child(mNumRequest);
+                updateRequest(mNumRequest);
 
-                // if the user press on destination reached, the state of the button is set to True.
-                hitchhikerRequest.setDestinationReached(true);
-
-                // update in firebase the hitchhicker resquest
-                myRef.updateChildren(hitchhikerRequest.toMap(), new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        Toast.makeText(context,"Destination reached : \nRequest closed",Toast.LENGTH_SHORT).show();
-                    }
-                });
                 // change fragment
                 DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
                 getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb, "destination_goodbad").commit();
@@ -184,6 +179,22 @@ public class MyTrip extends Fragment {
         });
 
         return view;
+    }
+
+    private void updateRequest(String mNumRequest) {
+        // get the reference for the pending request
+        myRef = database.getReference("requests").child(mNumRequest);
+
+        // if the user press on destination reached, the state of the button is set to True.
+        hitchhikerRequest.setDestinationReached(true);
+
+        // update in firebase the hitchhicker resquest
+        myRef.updateChildren(hitchhikerRequest.toMap(), new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                Toast.makeText(context, "Destination reached : \nRequest closed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -215,64 +226,99 @@ public class MyTrip extends Fragment {
      */
     private void getUserLocation() {
 
-        myRef = database.getReference("trips");
-
         // check the permissions
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        }
-
-        if ( Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return  ;
+            return;
         }
 
         lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        final LocationListener locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             // each time the location change store the new location on firebase
             public void onLocationChanged(Location location) {
-                myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(location);
-                System.out.println("================ INSERT LOCATION ==================");
+                //myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(location);
+                locationHashMap.put(new Date(), location);
 
                 // check if the user is near the destination
-                if(isDestinationReached(location, destinationLocation))
-                    System.out.println("Reached!");
-                else
-                    System.out.println("Not reached");
+                if (isDestinationReached(location, destinationLocation)) {
+                    lm.removeUpdates(this);
+
+                    // if the destination is reached show a popup to confirm
+                    showPopup();
+                }
             }
 
             public void onProviderDisabled(String arg0) {
-                // TODO Auto-generated method stub
 
             }
 
             public void onProviderEnabled(String arg0) {
-                // TODO Auto-generated method stub
 
             }
 
             public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-                // TODO Auto-generated method stub
 
             }
         };
 
         // call the method each 10 sec
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
-
-        // create the trip on firebase
-        if(location != null) {
-            myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(location);
-            if(isDestinationReached(location, destinationLocation))
-                System.out.println("Reached!");
-            else
-                System.out.println("Not reached");
-        }
     }
 
+    // show a little popup to be sure the user has reached his destination
+    private void showPopup() {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
+        builder.setTitle("Destination reached ?")
+                .setMessage("Are you sure ?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // set the destinationReached boolean to true
+                        updateRequest(mNumRequest);
+
+                        myRef = database.getReference("trips");
+
+                        // create the trip on firebase
+                        for(Map.Entry<Date, Location> entry : locationHashMap.entrySet()) {
+                            Date key = entry.getKey();
+                            Location value = entry.getValue();
+
+                            myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(value);
+                        }
+
+                        // close the dialog
+                        dialog.cancel();
+
+                        // change fragment
+                        DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
+                        getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb, "destination_goodbad").commit();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+
+                        // call the method each 10 sec
+                        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
+
+                        // close the dialog
+                        dialog.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    // method to check if the destination is reached
     private boolean isDestinationReached(Location currentLocation, Location finalLocation) {
         double latCurrentLocation = currentLocation.getLatitude();
         double lngCurrentLocation = currentLocation.getLongitude();
@@ -286,7 +332,7 @@ public class MyTrip extends Fragment {
         return false;
     }
 
-
+    // method to get the distance in km between 2 locations
     private double distance(double lat1, double lng1, double lat2, double lng2) {
 
         double earthRadius = 6371; //
@@ -309,7 +355,8 @@ public class MyTrip extends Fragment {
 
     // method to get the address from the location
     // used for debugging
-    private void showMyAddress(Location location) {
+    private String showMyAddress(Location location) {
+        String out = "";
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         Geocoder myLocation = new Geocoder(context.getApplicationContext(), Locale.getDefault());
@@ -317,12 +364,14 @@ public class MyTrip extends Fragment {
         try {
             myList = myLocation.getFromLocation(latitude, longitude, 1);
             if(myList.size() == 1) {
-                System.out.println(myList.get(0).toString());
+                out = myList.get(0).toString();
             }
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+
+        return out;
     }
 
     /**
