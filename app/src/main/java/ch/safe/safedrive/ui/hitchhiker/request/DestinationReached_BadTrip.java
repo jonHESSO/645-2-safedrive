@@ -151,6 +151,7 @@ public class DestinationReached_BadTrip extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
+    
 
     @Override
     public void onDetach() {
