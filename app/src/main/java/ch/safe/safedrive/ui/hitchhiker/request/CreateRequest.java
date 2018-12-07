@@ -532,7 +532,7 @@ public class CreateRequest extends Fragment {
                 }
 
                 Map.Entry closestEntry = entriesSortedByValues(locationsFrom).first();
-                if ((double)closestEntry.getValue() <= 0.1)
+                if ((double)closestEntry.getValue() <= 5)
                 {
                     int position = locationsFromAdapter.getPosition((String)closestEntry.getKey());
                     mSpinnerCityFrom.setSelection(position,true);
