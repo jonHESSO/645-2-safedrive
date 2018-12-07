@@ -148,7 +148,7 @@ public class MyTrip extends Fragment {
             @Override
             public void onClick(View view) {
                 SecurityWarning sw = SecurityWarning.newInstance(mNumRequest);
-                getFragmentManager().beginTransaction().replace(R.id.flContent, sw).commit();
+                getFragmentManager().beginTransaction().replace(R.id.flContent, sw, "security_warning").commit();
             }
         });
 

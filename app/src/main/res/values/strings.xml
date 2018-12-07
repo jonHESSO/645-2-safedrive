@@ -69,5 +69,6 @@
     <string name="callPolice">Call 117</string>
     <string name="returnTrip">Return to \"My Trip\"</string>
     <string name="reportProb">Report a problem</string>
+    <string name="SendAdmin">A security warning was sent to the administrator</string>
 
 </resources>

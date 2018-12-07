@@ -7,29 +7,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import ch.safe.safedrive.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SecurityWarning.OnFragmentInteractionListener} interface
+ * {@link SecurityWarning_Admin.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SecurityWarning#newInstance} factory method to
+ * Use the {@link SecurityWarning_Admin#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SecurityWarning extends Fragment {
-
-
-    private static final String NUM_REQUEST = "numRequest";
-    private String textAlert = "User in danger";
-    private String mNumRequest;
-    private View view;
-
-    private Button mBtnAlertAdmin;
-    private Button mBtnReturnTrip;
-
+public class SecurityWarning_Admin extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -41,7 +30,7 @@ public class SecurityWarning extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SecurityWarning() {
+    public SecurityWarning_Admin() {
         // Required empty public constructor
     }
 
@@ -49,23 +38,26 @@ public class SecurityWarning extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment SecurityWarning.
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment SecurityWarning_Admin.
      */
-    public static SecurityWarning newInstance(String mNumRequest) {
-        SecurityWarning fragment = new SecurityWarning();
+    // TODO: Rename and change types and number of parameters
+    public static SecurityWarning_Admin newInstance(String param1, String param2) {
+        SecurityWarning_Admin fragment = new SecurityWarning_Admin();
         Bundle args = new Bundle();
-        args.putString(NUM_REQUEST, mNumRequest);
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mNumRequest = getArguments().getString(NUM_REQUEST);
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -73,29 +65,7 @@ public class SecurityWarning extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view =  inflater.inflate(R.layout.fragment_security_warning, container, false);
-
-        //Change fragment
-        //Button alert Admin
-        mBtnAlertAdmin =  view.findViewById(R.id.btnWarningAdmin);
-        mBtnAlertAdmin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //SecurityWarning_Admin swAdmin = SecurityWarning.newInstance(mNumRequest, textAlert);
-               // getFragmentManager().beginTransaction().replace(R.id.flContent, swAdmin).commit();
-            }
-        });
-
-        mBtnReturnTrip = view.findViewById(R.id.btnReturnTrip);
-        mBtnReturnTrip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MyTrip mt = MyTrip.newInstance(mNumRequest);
-                getFragmentManager().beginTransaction().add(R.id.flContent, mt).hide(getFragmentManager().findFragmentByTag("security_warning")).addToBackStack(null).commit();
-            }
-        });
-
-        return view;
+        return inflater.inflate(R.layout.fragment_security_warning__admin, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
