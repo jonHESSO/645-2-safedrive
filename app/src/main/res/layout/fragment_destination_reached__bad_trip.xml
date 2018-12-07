@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/textViewTripGoWrong"
-            android:layout_width="wrap_content"
+            android:layout_width="228dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="52dp"
@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/textViewWhy"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="44dp"
@@ -37,7 +37,7 @@
             android:text="@string/Why"
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.11"
+            app:layout_constraintHorizontal_bias="0.123"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTripGoWrong" />
 
@@ -64,7 +64,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="28dp"
             android:layout_marginEnd="8dp"
-            android:background="@color/colorPrimary"
+            android:background="@color/ColorRed"
             android:text="@string/btnTestimony"
             android:textAllCaps="true"
             android:textColor="@color/ColorWhite"

@@ -1,6 +1,7 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,8 +27,9 @@ public class DestinationReached_End extends Fragment {
     private Button mBtnLeaveApp;
     private Button mBtnBackNewRequest;
 
+    // Required empty public constructor
     public DestinationReached_End() {
-        // Required empty public constructor
+
     }
 
     /**
@@ -39,7 +41,6 @@ public class DestinationReached_End extends Fragment {
     public static DestinationReached_End newInstance() {
         DestinationReached_End fragment = new DestinationReached_End();
         Bundle args = new Bundle();
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,7 +48,6 @@ public class DestinationReached_End extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -65,12 +65,25 @@ public class DestinationReached_End extends Fragment {
         return mView;
     }
 
-
+    // when the user want a new request
     public void onPressBtnBackNewRequest(){
 
+        // get the button New Request from the view
         mBtnBackNewRequest = (Button) mView.findViewById(R.id.buttonNewRequest);
+        mBtnBackNewRequest.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
 
+                // remove all fragment stored in the fragment manager
+                for (Fragment fragment:getFragmentManager().getFragments()) {
+                    getFragmentManager().beginTransaction().remove(fragment).commit();
+                }
 
+                // create a new Hitchhicker request !
+                Intent intent = new Intent(getActivity(), HitchhikerActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     // when the user want to leave the app
@@ -81,7 +94,8 @@ public class DestinationReached_End extends Fragment {
         mBtnLeaveApp.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                // exit the app
+                // finish the activity and exit the app
+                getActivity().finish();
                 System.exit(0);
             }
         });
