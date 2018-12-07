@@ -1,7 +1,6 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -21,8 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -58,7 +55,8 @@ public class MyTrip extends Fragment {
     private Request hitchhikerRequest;
     private OnFragmentInteractionListener mListener;
     private LocationManager lm;
-    private Location location;
+    private Location location, destinationLocation;
+    private Double lat, lng;
 
     // access to firebase database
     private FirebaseDatabase database;
@@ -103,28 +101,71 @@ public class MyTrip extends Fragment {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_my_trip, container, false);
 
+        //Button report problem
+        mButtonReportProblem = view.findViewById(R.id.buttonReportProblem);
+        mButtonReportProblem.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick (View view){
+                SecurityWarning sw = SecurityWarning.newInstance(mNumRequest);
+                getFragmentManager().beginTransaction().replace(R.id.flContent, sw).commit();
+            }
+        });
+
         // get the reference for the pending request
         myRef = database.getReference("requests").child(mNumRequest);
 
         // retrieved the data for the hitchhicker resquest
-        myRef.addValueEventListener(new ValueEventListener() {
+        ValueEventListener valueEventListenerHitchhicker = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 hitchhikerRequest = dataSnapshot.getValue(Request.class);
                 hitchhikerRequest.setId(dataSnapshot.getKey());
+
+                myRef = database.getReference("locations").child(hitchhikerRequest.getLocationTo());
+                ValueEventListener valueEventListenerDestination = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        lat = dataSnapshot.child("latitude"). getValue(Double .class);
+                        lng = dataSnapshot.child("longitude").getValue(Double .class);
+
+                        System.out.println(lat + " ========================= "+ lng);
+
+                        destinationLocation = new Location("");
+                        destinationLocation.setLatitude(lat);
+                        destinationLocation.setLongitude(lng);
+
+                        // call the method to get the current position of the user
+                        getUserLocation();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+                myRef.addValueEventListener(valueEventListenerDestination);
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
+
+        myRef.addValueEventListener(valueEventListenerHitchhicker);
+
 
         // button destination reached
         mButtonDestinationReached = (Button) view.findViewById(R.id.buttonDestinationReached);
-
         mButtonDestinationReached.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // get the reference for the pending request
+                myRef = database.getReference("requests").child(mNumRequest);
 
                 // if the user press on destination reached, the state of the button is set to True.
                 hitchhikerRequest.setDestinationReached(true);
@@ -141,18 +182,6 @@ public class MyTrip extends Fragment {
                 getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb, "destination_goodbad").commit();
             }
         });
-
-        //Button report problem
-        mButtonReportProblem = view.findViewById(R.id.buttonReportProblem);
-        mButtonReportProblem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SecurityWarning sw = SecurityWarning.newInstance(mNumRequest);
-                getFragmentManager().beginTransaction().replace(R.id.flContent, sw, "security_warning").commit();
-            }
-        });
-
-        checkLoca();
 
         return view;
     }
@@ -181,10 +210,14 @@ public class MyTrip extends Fragment {
         mListener = null;
     }
 
-    private void checkLoca() {
+    /**
+     * Method to get the current user's location and store it on firebase
+     */
+    private void getUserLocation() {
 
         myRef = database.getReference("trips");
 
+        // check the permissions
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
@@ -199,9 +232,16 @@ public class MyTrip extends Fragment {
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         final LocationListener locationListener = new LocationListener() {
+            // each time the location change store the new location on firebase
             public void onLocationChanged(Location location) {
-                showMyAddress(location);
                 myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(location);
+                System.out.println("================ INSERT LOCATION ==================");
+
+                // check if the user is near the destination
+                if(isDestinationReached(location, destinationLocation))
+                    System.out.println("Reached!");
+                else
+                    System.out.println("Not reached");
             }
 
             public void onProviderDisabled(String arg0) {
@@ -220,16 +260,55 @@ public class MyTrip extends Fragment {
             }
         };
 
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+        // call the method each 10 sec
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
 
+        // create the trip on firebase
         if(location != null) {
-            showMyAddress(location);
             myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(location);
+            if(isDestinationReached(location, destinationLocation))
+                System.out.println("Reached!");
+            else
+                System.out.println("Not reached");
         }
     }
 
-    // Also declare a private method
+    private boolean isDestinationReached(Location currentLocation, Location finalLocation) {
+        double latCurrentLocation = currentLocation.getLatitude();
+        double lngCurrentLocation = currentLocation.getLongitude();
+        double latFinalLocation = finalLocation.getLatitude();
+        double lngFinalLocation = finalLocation.getLongitude();
 
+        if (distance(latCurrentLocation, lngCurrentLocation, latFinalLocation, lngFinalLocation) < 0.1) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 6371; //
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double dist = earthRadius * c;
+
+        return dist;
+    }
+
+    // method to get the address from the location
+    // used for debugging
     private void showMyAddress(Location location) {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
