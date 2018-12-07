@@ -56,13 +56,11 @@ public class DestinationReached_End extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_destination_reached__end, container, false);
 
-
         // when the user want a new request
         onPressBtnBackNewRequest();
 
         // when the user want to leave the app
         onPressBtnLeaveApp();
-
 
         return mView;
     }
