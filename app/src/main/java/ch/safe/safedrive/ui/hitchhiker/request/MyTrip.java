@@ -17,13 +17,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,7 +56,7 @@ import ch.safe.safedrive.R;
  * Use the {@link MyTrip#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyTrip extends Fragment {
+public class MyTrip extends Fragment implements OnMapReadyCallback {
     private static String NUM_REQUEST = "param1";
 
     static public final int REQUEST_LOCATION = 1;
@@ -64,6 +71,8 @@ public class MyTrip extends Fragment {
     private Double lat, lng;
     private LocationListener locationListener;
     private HashMap<Date, Location> locationHashMap = new HashMap<>();
+    private MapView mMapView;
+    private GoogleMap googleMap;
 
     // access to firebase database
     private FirebaseDatabase database;
@@ -98,6 +107,7 @@ public class MyTrip extends Fragment {
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
+
         database = FirebaseDatabase.getInstance();
     }
 
@@ -172,9 +182,53 @@ public class MyTrip extends Fragment {
 
                 updateRequest(mNumRequest);
 
+                myRef = database.getReference("trips");
+
+                // create the trip on firebase
+                for(Map.Entry<Date, Location> entry : locationHashMap.entrySet()) {
+                    Date key = entry.getKey();
+                    Location value = entry.getValue();
+
+                    myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(value);
+                }
+
                 // change fragment
                 DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
                 getFragmentManager().beginTransaction().replace(R.id.flContent, dest_gb, "destination_goodbad").commit();
+            }
+        });
+
+        // Get the view of the map
+        mMapView = (MapView) view.findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.onResume(); // needed to get the map to display immediately
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Initialize the map
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                googleMap = mMap;
+
+                // For showing a move to my location button
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                googleMap.setMyLocationEnabled(true);
+
+                // For dropping a marker at a point on the Map
+                LatLng sydney = new LatLng(-34, 151);
+                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
+
+                // For zooming automatically to the location of the marker
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
 
@@ -237,8 +291,15 @@ public class MyTrip extends Fragment {
         locationListener = new LocationListener() {
             // each time the location change store the new location on firebase
             public void onLocationChanged(Location location) {
-                //myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(location);
                 locationHashMap.put(new Date(), location);
+
+                // Add a marker in the maps
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                googleMap.addMarker(new MarkerOptions().position(latLng)
+                        .title("Marker in " + showMyAddress(location)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                System.out.println("marker added");
 
                 // check if the user is near the destination
                 if (isDestinationReached(location, destinationLocation)) {
@@ -372,6 +433,11 @@ public class MyTrip extends Fragment {
         }
 
         return out;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
     }
 
     /**
