@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -39,11 +40,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import ch.safe.safedrive.model.Request;
@@ -80,6 +84,13 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     private DatabaseReference myRef;
 
     private Context context;
+    private Timer timer;
+    private TimerTask timerTask;
+    private int securityFrequency = 15000;
+
+    private AlertDialog.Builder needHalp;
+    private AlertDialog helpDialog ;
+
 
     public MyTrip() {
         // Required empty public constructor
@@ -110,6 +121,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         }
 
         database = FirebaseDatabase.getInstance();
+
+
     }
 
     @Override
@@ -157,7 +170,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(destinationLocation.getLatitude(), destinationLocation.getLongitude())));
 
                         // call the method to get the current position of the user
-                        getUserLocation();
+
                     }
 
                     @Override
@@ -232,6 +245,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        getUserLocation();
+        checkSecurity();
+
         return view;
     }
 
@@ -249,6 +265,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 Toast.makeText(context, "Destination reached : \nRequest closed", Toast.LENGTH_SHORT).show();
             }
         });
+
+        stopTimer();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -288,6 +306,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+        locationHashMap.put(new Date(), location);
+
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 
@@ -301,12 +321,13 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                 // check if the user is near the destination
-                if (isDestinationReached(location, destinationLocation)) {
-                    lm.removeUpdates(this);
+                if (destinationLocation != null && isDestinationReached(location, destinationLocation) ) {
+                    //isReached = true ;
 
                     // if the destination is reached show a popup to confirm
                     showPopup();
                 }
+
             }
 
             public void onProviderDisabled(String arg0) {
@@ -457,4 +478,80 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-}
+
+    private void checkSecurity()
+    {
+        timerTask = new TimerTask() {
+
+            @Override
+            public void run() {
+                Date latest = new Date();
+                if (!locationHashMap.isEmpty()) {
+                    latest = Collections.max(locationHashMap.keySet());
+                }
+                Date now = new Date();
+                if (latest.getTime() + securityFrequency < now.getTime()) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            if (helpDialog == null) {
+                                                                helpDialog = needHalp.create();
+                                                                helpDialog.show();
+                                                            }
+
+                                                        }
+                                                    }
+                        );
+
+                    }
+                }
+            }
+        };
+
+            startTimer();
+
+
+        }
+
+        public void startTimer() {
+        if(timer != null) {
+            return;
+        }
+        timer = new Timer();
+        timer.scheduleAtFixedRate(timerTask, 0, securityFrequency);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            needHalp = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            needHalp = new AlertDialog.Builder(context);
+        }
+        needHalp.setTitle("Are you in danger ?")
+                .setMessage("Your position hasn't changed in the last 5min")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        stopTimer();
+                        dialog.cancel();
+                        helpDialog = null ;
+                        mButtonReportProblem.callOnClick();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        //close dialog
+                        dialog.cancel();
+                        helpDialog = null ;
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert) ;
+    }
+
+        public void stopTimer() {
+        timer.cancel();
+        timer = null;
+    }
+    }

@@ -11,38 +11,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <Button
+            android:id="@+id/buttonDestinationReached"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/btnDestinationReached"
+            android:textAllCaps="true"
+            android:textColor="@color/ColorWhite"
+            app:layout_constraintBottom_toTopOf="@+id/buttonReportProblem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/buttonReportProblem"
+            android:layout_width="170dp"
+            android:layout_height="51dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:background="@color/ColorRed"
+            android:text="@string/btnReportProb"
+            android:textAllCaps="true"
+            android:textColor="@color/ColorWhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="420dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonDestinationReached"
             app:layout_constraintTop_toTopOf="parent" />
 
 
 
 
     </android.support.constraint.ConstraintLayout>
-
-    <Button
-        android:id="@+id/buttonDestinationReached"
-        android:layout_width="170dp"
-        android:layout_height="51dp"
-        android:background="@color/colorPrimary"
-        android:text="@string/btnDestinationReached"
-        android:textAllCaps="true"
-        android:textColor="@color/ColorWhite"
-        android:layout_marginTop="430dp"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:id="@+id/buttonReportProblem"
-        android:layout_width="170dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="500dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/ColorRed"
-        android:text="@string/btnReportProb"
-        android:textAllCaps="true"
-        android:textColor="@color/ColorWhite"
-        android:layout_gravity="center_horizontal"/>
 
 </FrameLayout>
