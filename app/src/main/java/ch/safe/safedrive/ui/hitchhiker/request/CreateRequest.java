@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -245,6 +249,27 @@ public class CreateRequest extends Fragment {
 
     }
 
+    public String readPicture(Bitmap bitmap) {
+        TextRecognizer textRecognizer = new TextRecognizer.Builder(view.getContext().getApplicationContext()).build();
+
+        Frame imageFrame = new Frame.Builder()
+
+                .setBitmap(bitmap)                 // your image bitmap
+                .build();
+
+        String imageText = "";
+
+
+        SparseArray<TextBlock> textBlocks = textRecognizer.detect(imageFrame);
+
+        for (int i = 0; i < textBlocks.size(); i++) {
+            TextBlock textBlock = textBlocks.get(textBlocks.keyAt(i));
+            imageText = textBlock.getValue();
+        }
+
+        return imageText;
+    }
+
     public void storeRequest() {
 
         mCityFrom = mSpinnerCityFrom.getSelectedItem().toString();
@@ -392,6 +417,7 @@ public class CreateRequest extends Fragment {
                     // Take this picture and put it in the image button
                     Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
                     mbtnTakingPicture.setImageBitmap(bitmapTakingPicture);
+                    System.out.println("========" + readPicture(bitmapTakingPicture) + "=========");
 
                 }catch (Exception e){
                     e.printStackTrace();
