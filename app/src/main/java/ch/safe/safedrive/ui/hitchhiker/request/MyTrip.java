@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -151,6 +152,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                         destinationLocation.setLatitude(lat);
                         destinationLocation.setLongitude(lng);
 
+                        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(destinationLocation.getLatitude(), destinationLocation.getLongitude())));
+
                         // call the method to get the current position of the user
                         getUserLocation();
                     }
@@ -221,14 +225,6 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                     return;
                 }
                 googleMap.setMyLocationEnabled(true);
-
-                // For dropping a marker at a point on the Map
-                LatLng sydney = new LatLng(-34, 151);
-                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-
-                // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
 
@@ -295,11 +291,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
                 // Add a marker in the maps
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                googleMap.addMarker(new MarkerOptions().position(latLng)
-                        .title("Marker in " + showMyAddress(location)));
+                googleMap.addMarker(new MarkerOptions().position(latLng).title(showMyAddress(location)));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                System.out.println("marker added");
 
                 // check if the user is near the destination
                 if (isDestinationReached(location, destinationLocation)) {
@@ -417,19 +411,18 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     // method to get the address from the location
     // used for debugging
     private String showMyAddress(Location location) {
+
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(context, Locale.getDefault());
         String out = "";
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        Geocoder myLocation = new Geocoder(context.getApplicationContext(), Locale.getDefault());
-        List<Address> myList;
+
         try {
-            myList = myLocation.getFromLocation(latitude, longitude, 1);
-            if(myList.size() == 1) {
-                out = myList.get(0).toString();
-            }
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            String address = addresses.get(0).getAddressLine(0);
+            out = address + "\n";
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return out;
