@@ -250,21 +250,19 @@ public class CreateRequest extends Fragment {
     }
 
     public String readPicture(Bitmap bitmap) {
-        TextRecognizer textRecognizer = new TextRecognizer.Builder(view.getContext().getApplicationContext()).build();
+        TextRecognizer textRecognizer = new TextRecognizer.Builder(view.getContext()).build();
 
         Frame imageFrame = new Frame.Builder()
-
-                .setBitmap(bitmap)                 // your image bitmap
+                .setBitmap(bitmap)
                 .build();
 
         String imageText = "";
-
 
         SparseArray<TextBlock> textBlocks = textRecognizer.detect(imageFrame);
 
         for (int i = 0; i < textBlocks.size(); i++) {
             TextBlock textBlock = textBlocks.get(textBlocks.keyAt(i));
-            imageText = textBlock.getValue();
+            imageText += textBlock.getValue();
         }
 
         return imageText;
@@ -417,7 +415,9 @@ public class CreateRequest extends Fragment {
                     // Take this picture and put it in the image button
                     Bitmap bitmapTakingPicture = (Bitmap) data.getExtras().get("data");
                     mbtnTakingPicture.setImageBitmap(bitmapTakingPicture);
-                    System.out.println("========" + readPicture(bitmapTakingPicture) + "=========");
+
+                    // read the picture and try to set the plate in the textview
+                    mEditTextNumPlate.setText(readPicture(bitmapTakingPicture));
 
                 }catch (Exception e){
                     e.printStackTrace();
