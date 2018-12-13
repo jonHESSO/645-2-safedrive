@@ -62,7 +62,6 @@
     <string name="error_field_testimony">Please tell us what happened</string>
 
 
-
     <string name="validate">Validate</string>
     <string name="btnShowLocation">Show Location</string>
 
@@ -73,5 +72,7 @@
     <string name="returnTrip">Return to \"My Trip\"</string>
     <string name="reportProb">Report a problem</string>
     <string name="SendAdmin">A security warning was sent to the administrator</string>
+    <string name="title_activity_example_navigation_drawer">ExampleNavigationDrawer</string>
+    <string name="logout">Logout</string>
 
 </resources>

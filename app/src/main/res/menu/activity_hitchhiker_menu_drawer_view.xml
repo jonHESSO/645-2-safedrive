@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+     <!-- checkableBehavior=single Allows you to show whicht list item is currently selected -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/logout" />
+    </group>
+</menu>

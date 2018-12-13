@@ -56,6 +56,10 @@ public class DestinationReached_End extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_destination_reached__end, container, false);
 
+
+        // the hitchhiker has finished his trip ---> set it to false in the hitchhiker activity
+        ((HitchhikerActivity) this.getActivity()).setHitchhikerOnTrip(false);
+
         // when the user want a new request
         onPressBtnBackNewRequest();
 

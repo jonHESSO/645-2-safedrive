@@ -116,6 +116,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_my_trip, container, false);
 
@@ -177,6 +178,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
         myRef.addValueEventListener(valueEventListenerHitchhicker);
 
+
+        // the hitchhiker is on trip ---> set it to true in the hitchhiker activity
+        ((HitchhikerActivity) this.getActivity()).setHitchhikerOnTrip(true);
 
         // button destination reached
         mButtonDestinationReached = (Button) view.findViewById(R.id.buttonDestinationReached);
