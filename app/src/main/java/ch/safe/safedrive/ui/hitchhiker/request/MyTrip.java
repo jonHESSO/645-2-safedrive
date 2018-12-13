@@ -116,6 +116,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_my_trip, container, false);
 
@@ -177,6 +178,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
         myRef.addValueEventListener(valueEventListenerHitchhicker);
 
+
+        // the hitchhiker is on trip ---> set it to true in the hitchhiker activity
+        ((HitchhikerActivity) this.getActivity()).setHitchhikerOnTrip(true);
 
         // button destination reached
         mButtonDestinationReached = (Button) view.findViewById(R.id.buttonDestinationReached);
@@ -285,8 +289,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         locationListener = new LocationListener() {
-            // each time the location change store the new location on firebase
             public void onLocationChanged(Location location) {
+
+                // put the new location of the user in the hash map
                 locationHashMap.put(new Date(), location);
 
                 // Add a marker in the maps
@@ -323,6 +328,10 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
     // show a little popup to be sure the user has reached his destination
     private void showPopup() {
+
+        // destroy the location listener
+        lm.removeUpdates(locationListener);
+
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
@@ -362,7 +371,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                             return;
                         }
 
-                        // call the method each 10 sec
+                        // call the method each 10 sec to restart tracking
                         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
 
                         // close the dialog
@@ -380,7 +389,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         double latFinalLocation = finalLocation.getLatitude();
         double lngFinalLocation = finalLocation.getLongitude();
 
-        if (distance(latCurrentLocation, lngCurrentLocation, latFinalLocation, lngFinalLocation) < 0.1) {
+        // if the distance is smaller than 200m -> considering destination reached
+        if (distance(latCurrentLocation, lngCurrentLocation, latFinalLocation, lngFinalLocation) < 0.2) {
             return true;
         }
 
