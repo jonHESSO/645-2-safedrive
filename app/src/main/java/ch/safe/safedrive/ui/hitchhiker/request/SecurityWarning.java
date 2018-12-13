@@ -5,10 +5,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import javax.mail.*;
 
 import ch.safe.safedrive.R;
 
@@ -21,6 +29,13 @@ import ch.safe.safedrive.R;
  * create an instance of this fragment.
  */
 public class SecurityWarning extends Fragment {
+
+
+    //Access firebase
+    //Firebase
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private FirebaseUser user;
 
 
     private static final String NUM_REQUEST = "numRequest";
@@ -69,6 +84,12 @@ public class SecurityWarning extends Fragment {
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
         }
+
+        //The entry point for accessing a Firebase Database
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+
     }
 
     @Override
@@ -76,6 +97,8 @@ public class SecurityWarning extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_security_warning, container, false);
+
+
 
         //Change fragment
         //Button alert Admin
@@ -107,14 +130,58 @@ public class SecurityWarning extends Fragment {
             }
         });
 
+       /* mBtnAlertAdmin = view.findViewById(R.id.btnWarningAdmin);
+        mBtnAlertAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String emailLogin = user.getEmail();
+                   Mail sender = new Mail(emailLogin);
+
+                try {
+                    sender.sendMail("Alert !",
+                            "Alert for the person...",
+                            emailLogin,
+                            "alert.safedrive@gmail.com");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });*/
 
         return view;
     }
+
+
+
 
     public void callPolice(final String phoneNumber)
     {
         startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null)));
     }
+
+
+
+
+
+    //Method to send a email
+    protected void sendEmail()
+    {
+        mDatabaseReference = mFirebaseDatabase.getReference("user");
+
+
+       /* String[] to = {"alert.safedrive@gmail.com"};
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);*/
+
+    }
+
+
+
+
+
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
