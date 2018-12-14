@@ -91,6 +91,10 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     private AlertDialog.Builder needHalp;
     private AlertDialog helpDialog ;
 
+    private boolean snoozePopup ;
+    private Timer snoozeTimer ;
+    private TimerTask snoozeTimerTask ;
+
 
     public MyTrip() {
         // Required empty public constructor
@@ -321,7 +325,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                 // check if the user is near the destination
-                if (destinationLocation != null && isDestinationReached(location, destinationLocation) ) {
+                if (destinationLocation != null && isDestinationReached(location, destinationLocation)) {
                     //isReached = true ;
 
                     // if the destination is reached show a popup to confirm
@@ -397,6 +401,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
                         // close the dialog
                         dialog.cancel();
+
+
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -490,7 +496,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                     latest = Collections.max(locationHashMap.keySet());
                 }
                 Date now = new Date();
-                if (latest.getTime() + securityFrequency < now.getTime()) {
+                if ((latest.getTime() + securityFrequency) < now.getTime()) {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(new Runnable() {
                                                         @Override
@@ -554,4 +560,6 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         timer.cancel();
         timer = null;
     }
+
+
     }
