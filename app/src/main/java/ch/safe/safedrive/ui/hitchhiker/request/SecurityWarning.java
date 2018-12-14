@@ -2,8 +2,11 @@ package ch.safe.safedrive.ui.hitchhiker.request;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,12 +16,18 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
 
 import javax.mail.*;
 
 import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,13 +48,19 @@ public class SecurityWarning extends Fragment {
 
 
     private static final String NUM_REQUEST = "numRequest";
-    private String textAlert = "User in danger";
     private String mNumRequest;
     private View view;
 
     private Button mBtnAlertAdmin;
     private Button mBtnReturnTrip;
     private Button mBtnCallPolice;
+
+    private String userName ;
+
+    //Variable needed for email
+    //private String nameUser = user.getDisplayName();
+    private String [] emailAlert = {"alert.safedrive@gmail.com"};
+    private String  textAlert ;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,6 +70,7 @@ public class SecurityWarning extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -88,6 +104,8 @@ public class SecurityWarning extends Fragment {
         //The entry point for accessing a Firebase Database
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        userName = user.getEmail();
+        textAlert = "The user is in danger : " + userName;
 
 
     }
@@ -130,25 +148,26 @@ public class SecurityWarning extends Fragment {
             }
         });
 
-       /* mBtnAlertAdmin = view.findViewById(R.id.btnWarningAdmin);
+        mBtnAlertAdmin = view.findViewById(R.id.btnWarningAdmin);
         mBtnAlertAdmin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                String emailLogin = user.getEmail();
-                   Mail sender = new Mail(emailLogin);
-
-                try {
-                    sender.sendMail("Alert !",
-                            "Alert for the person...",
-                            emailLogin,
-                            "alert.safedrive@gmail.com");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                Intent intent = new Intent (Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Alert danger");
+                intent.putExtra(Intent.EXTRA_TEXT, textAlert);
+                intent.putExtra(Intent.EXTRA_EMAIL, emailAlert);
+                final PackageManager pm =  getActivity().getPackageManager();
+                final List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
+                ResolveInfo best = null;
+                for (final ResolveInfo info : matches)
+                    if (info.activityInfo.packageName.endsWith(".gm") ||
+                            info.activityInfo.name.toLowerCase().contains("gmail")) best = info;
+                if (best != null)
+                    intent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
+                startActivity(intent);
             }
-        });*/
+        });
 
         return view;
     }
@@ -160,25 +179,6 @@ public class SecurityWarning extends Fragment {
     {
         startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null)));
     }
-
-
-
-
-
-    //Method to send a email
-    protected void sendEmail()
-    {
-        mDatabaseReference = mFirebaseDatabase.getReference("user");
-
-
-       /* String[] to = {"alert.safedrive@gmail.com"};
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);*/
-
-    }
-
-
-
-
 
 
 
