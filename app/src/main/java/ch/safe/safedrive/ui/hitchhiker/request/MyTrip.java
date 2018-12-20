@@ -21,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,9 +66,10 @@ import ch.safe.safedrive.R;
  */
 public class MyTrip extends Fragment implements OnMapReadyCallback {
     private static String NUM_REQUEST = "param1";
+    private static String NUM_PLATE = "param2";
 
     static public final int REQUEST_LOCATION = 1;
-    private String mNumRequest;
+    private String mNumRequest, mNumPlate;
     private View view;
     private Button mButtonDestinationReached;
     private Button mButtonReportProblem;
@@ -78,6 +82,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     private HashMap<Date, Location> locationHashMap = new HashMap<>();
     private MapView mMapView;
     private GoogleMap googleMap;
+    private Double distanceTrip = 0.0;
+    private Location previousLocation;
 
     // access to firebase database
     private FirebaseDatabase database;
@@ -108,10 +114,11 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
      * @return A new instance of fragment MyTrip.
      */
     // TODO: Rename and change types and number of parameters
-    public static MyTrip newInstance(String param1) {
+    public static MyTrip newInstance(String param1, String param2) {
         MyTrip fragment = new MyTrip();
         Bundle args = new Bundle();
         args.putString(NUM_REQUEST, param1);
+        args.putString(NUM_PLATE, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -122,11 +129,10 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         this.context = this.getContext();
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
+            mNumPlate = getArguments().getString(NUM_PLATE);
         }
 
         database = FirebaseDatabase.getInstance();
-
-
     }
 
     @Override
@@ -143,7 +149,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onClick(View view) {
-                SecurityWarning sw = SecurityWarning.newInstance(mNumRequest);
+                SecurityWarning sw = SecurityWarning.newInstance(mNumRequest, mNumPlate);
                 getFragmentManager().beginTransaction().replace(R.id.flContent, sw, "security_warning").commit();
             }
         });
@@ -205,17 +211,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                updateRequest(mNumRequest);
-
-                myRef = database.getReference("trips");
-
-                // create the trip on firebase
-                for(Map.Entry<Date, Location> entry : locationHashMap.entrySet()) {
-                    Date key = entry.getKey();
-                    Location value = entry.getValue();
-
-                    myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(value);
-                }
+                saveTripInFirebase();
 
                 // change fragment
                 DestinationReached_GoodBad dest_gb = DestinationReached_GoodBad.newInstance(mNumRequest);
@@ -309,6 +305,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
         lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        previousLocation = location;
 
         locationHashMap.put(new Date(), location);
 
@@ -317,6 +314,11 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
                 // put the new location of the user in the hash map
                 locationHashMap.put(new Date(), location);
+
+                // calcul the distance between two last points
+                distanceTrip += distance(previousLocation.getLatitude(), previousLocation.getLongitude(), location.getLatitude(), location.getLongitude());
+                System.out.println("==============" + distanceTrip + "==============");
+                previousLocation = location;
 
                 // Add a marker in the maps
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -367,18 +369,8 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 .setMessage("Are you sure ?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // set the destinationReached boolean to true
-                        updateRequest(mNumRequest);
 
-                        myRef = database.getReference("trips");
-
-                        // create the trip on firebase
-                        for(Map.Entry<Date, Location> entry : locationHashMap.entrySet()) {
-                            Date key = entry.getKey();
-                            Location value = entry.getValue();
-
-                            myRef.child(mNumRequest).child(UUID.randomUUID().toString()).setValue(value);
-                        }
+                        saveTripInFirebase();
 
                         // close the dialog
                         dialog.cancel();
@@ -409,6 +401,40 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 .show();
     }
 
+    private void saveTripInFirebase() {
+        // set the destinationReached boolean to true
+        updateRequest(mNumRequest);
+
+        myRef = database.getReference("requests").child(mNumRequest);
+
+        // create the trip on firebase
+        for(Map.Entry<Date, Location> entry : locationHashMap.entrySet()) {
+            Date key = entry.getKey();
+            Location value = entry.getValue();
+
+            myRef.child("trip").child(UUID.randomUUID().toString()).setValue(value);
+        }
+
+        myRef = database.getReference("statistics").child(""+ Calendar.getInstance().get(Calendar.YEAR)).child("drivers");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(mNumPlate)) {
+                    Double distance = dataSnapshot.child(mNumPlate).child("distance").getValue(Double.class);
+                    myRef.setValue(distanceTrip + distance);
+                } else {
+                    myRef.child(mNumPlate).child("distance").setValue(distanceTrip);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println(databaseError.getMessage());
+            }
+        });
+
+    }
+
     // method to check if the destination is reached
     private boolean isDestinationReached(Location currentLocation, Location finalLocation) {
         double latCurrentLocation = currentLocation.getLatitude();
@@ -425,7 +451,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     }
 
     // method to get the distance in km between 2 locations
-    private double distance(double lat1, double lng1, double lat2, double lng2) {
+    private Double distance(double lat1, double lng1, double lat2, double lng2) {
 
         double earthRadius = 6371; //
 

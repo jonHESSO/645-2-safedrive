@@ -48,7 +48,9 @@ public class SecurityWarning extends Fragment {
 
 
     private static final String NUM_REQUEST = "numRequest";
-    private String mNumRequest;
+    private static String NUM_PLATE = "param2";
+
+    private String mNumRequest, mNumPlate;
     private View view;
 
     private Button mBtnAlertAdmin;
@@ -84,10 +86,11 @@ public class SecurityWarning extends Fragment {
      *
      * @return A new instance of fragment SecurityWarning.
      */
-    public static SecurityWarning newInstance(String mNumRequest) {
+    public static SecurityWarning newInstance(String mNumRequest, String mNumPlate) {
         SecurityWarning fragment = new SecurityWarning();
         Bundle args = new Bundle();
         args.putString(NUM_REQUEST, mNumRequest);
+        args.putString(NUM_PLATE, mNumPlate);
         fragment.setArguments(args);
         return fragment;
     }
@@ -99,6 +102,7 @@ public class SecurityWarning extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNumRequest = getArguments().getString(NUM_REQUEST);
+            mNumPlate = getArguments().getString(NUM_PLATE);
         }
 
         //The entry point for accessing a Firebase Database
@@ -133,7 +137,7 @@ public class SecurityWarning extends Fragment {
         mBtnReturnTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MyTrip mt = MyTrip.newInstance(mNumRequest);
+                MyTrip mt = MyTrip.newInstance(mNumRequest, mNumPlate);
                 getFragmentManager().beginTransaction().add(R.id.flContent, mt).hide(getFragmentManager().findFragmentByTag("security_warning")).addToBackStack(null).commit();
             }
         });
