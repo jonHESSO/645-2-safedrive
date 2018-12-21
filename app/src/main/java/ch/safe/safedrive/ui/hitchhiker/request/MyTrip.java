@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -94,6 +96,10 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     // access to firebase database
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+
+    private FirebaseUser user;
+    private String email;
+    private String idUser;
 
     private Context context;
     private Timer timer;
@@ -452,19 +458,32 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        email = user.getEmail();
+        idUser = user.getUid();
+
+        System.out.println(email);
+
         myRef = database.getReference("statistics").child(year).child("hitchhikers");
 
         // update hitchhiker's data in statistics table
-        /*myRef.runTransaction(new Transaction.Handler() {
+        myRef.runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
 
-                if(mutableData.hasChild(mNumPlate)) {
+                if(mutableData.hasChild(idUser)) {
+                    Double distance = mutableData.child(idUser).child("distance").getValue(Double.class);
+                    int requests = mutableData.child(idUser).child("requests").getValue(Integer.class);
+
+                    mutableData.child(idUser).child("distance").setValue(distance + distanceTrip);
+                    mutableData.child(idUser).child("requests").setValue(requests + 1);
 
                     return Transaction.success(mutableData);
-                } else {
 
+                } else {
+                    mutableData.child(idUser).child("distance").setValue(distanceTrip);
+                    mutableData.child(idUser).child("requests").setValue(1);
 
                     return Transaction.success(mutableData);
                 }
@@ -474,8 +493,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
             public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
 
             }
-        });*/
-
+        });
 
     }
 
