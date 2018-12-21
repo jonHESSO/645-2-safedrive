@@ -1,19 +1,23 @@
 package ch.safe.safedrive.ui.hitchhiker.request;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,10 +30,12 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.mail.*;
 
 import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.Alert;
 import ch.safe.safedrive.model.Location;
 import ch.safe.safedrive.model.User;
 
@@ -69,11 +75,12 @@ public class SecurityWarning extends Fragment {
 
     private Double latitudeUser;
     private Double longuitudeUser;
+    private android.location.Location currentLocation;
 
     //Variable needed for email
     //private String nameUser = user.getDisplayName();
     private String [] emailAlert = {"alert.safedrive@gmail.com"};
-    private String  textAlert ;
+    private String  textAlert = "";
 
 
 
@@ -89,6 +96,8 @@ public class SecurityWarning extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
+
+    private LocationManager lm ;
 
     public SecurityWarning() {
         // Required empty public constructor
@@ -131,57 +140,34 @@ public class SecurityWarning extends Fragment {
 
     public String getLocation()
     {
-        mDatabaseReference = mFirebaseDatabase.getReference("locations");
-        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
 
+        lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        currentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-
-                        System.out.println("found");
-                        userFirstname = snapshot.child("latitude").getValue(String.class);
-                        userName = snapshot.child("longitude").getValue(String.class);
-
-
-
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+        latitudeUser = currentLocation.getLatitude();
+        longuitudeUser = currentLocation.getLongitude() ;
 
         return latitudeUser + " " + longuitudeUser;
     }
 
-    public void WriteMessageAlert()
+    public void initUserData()
     {
         user = FirebaseAuth.getInstance().getCurrentUser();
         userEmailCU = user.getEmail();
 
-        mDatabaseReference = mFirebaseDatabase.getReference("user");
+        mDatabaseReference = mFirebaseDatabase.getReference("user/"+user.getUid());
         mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    //User user = snapshot.getValue(User.class);
-                    String email = snapshot.child("email").getValue(String.class);
 
+                userFirstname = dataSnapshot.child("firstname").getValue(String.class);
+                userName = dataSnapshot.child("lastname").getValue(String.class);
 
+                textAlert = "The user " + userFirstname + " " + userName + " is in danger. Their location : "+getLocation() ;
 
-                    if(user.getEmail().equals(email) )
-                    {
-                        System.out.println("found");
-                        userFirstname = snapshot.child("firstname").getValue(String.class);
-                        userName = snapshot.child("lastname").getValue(String.class);
-
-                        textAlert = "The user " + userFirstname + " " + userName + " is in danger. Her location : " ;
-
-                    } else {
-                        System.out.println("nope");
-                    }
-                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -206,7 +192,7 @@ public class SecurityWarning extends Fragment {
             @Override
             public void onClick(View view) {
                 //SecurityWarning_Admin swAdmin = SecurityWarning.newInstance(mNumRequest, textAlert);
-               // getFragmentManager().beginTransaction().replace(R.id.flContent, swAdmin).commit();
+                // getFragmentManager().beginTransaction().replace(R.id.flContent, swAdmin).commit();
             }
         });
 
@@ -233,6 +219,8 @@ public class SecurityWarning extends Fragment {
         mBtnAlertAdmin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                storeAlert();
+
                 Intent intent = new Intent (Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Alert danger");
@@ -249,6 +237,10 @@ public class SecurityWarning extends Fragment {
                 startActivity(intent);
             }
         });
+
+        getLocation() ;
+        initUserData();
+
 
         return view;
     }
@@ -302,4 +294,12 @@ public class SecurityWarning extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private void storeAlert()
+    {
+        Alert alert = new Alert(mNumRequest,mNumPlate, user.getUid(), currentLocation, System.currentTimeMillis());
+        DatabaseReference alertRef = mFirebaseDatabase.getReference("alerts");
+        alertRef.child(UUID.randomUUID().toString()).setValue(alert);
+    }
+
 }

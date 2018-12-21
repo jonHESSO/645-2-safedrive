@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -90,14 +91,15 @@ public class CreateAccountActivity extends AppCompatActivity {
                     return;
                 }*/
 
-                storeUser();
+                //storeUser();
 
                 firebaseAuth.createUserWithEmailAndPassword(email,password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
-                                    storeUser();
+                                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                                    storeUser(user.getUid());
                                     startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                                     finish();
                                 }
@@ -112,9 +114,9 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     }
 
-    public void storeUser()
+    public void storeUser(String uid)
     {
-       User user = new User(UUID.randomUUID().toString(), email,firstname,lastname,phone);
+       User user = new User(uid, email,firstname,lastname,phone);
        myRef.child(user.getId()).setValue(user);
     }
 }
