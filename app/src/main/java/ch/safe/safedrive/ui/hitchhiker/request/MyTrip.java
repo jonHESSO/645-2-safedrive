@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
@@ -56,6 +59,8 @@ import java.util.UUID;
 
 import ch.safe.safedrive.model.Request;
 import ch.safe.safedrive.R;
+
+import static android.support.constraint.Constraints.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -419,26 +424,58 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
         String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
         myRef = database.getReference("statistics").child(year).child("drivers");
-        myRef.addValueEventListener(new ValueEventListener() {
+
+        // update drivers's data in statistics table
+        myRef.runTransaction(new Transaction.Handler() {
+            @NonNull
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(mNumPlate).exists()) {
-                    Double distance = dataSnapshot.child(mNumPlate).child("distance").getValue(Double.class);
-                    myRef.child(mNumPlate).child("distance").setValue(distanceTrip + distance);
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                if(mutableData.hasChild(mNumPlate)) {
+                    Double distance = mutableData.child(mNumPlate).child("distance").getValue(Double.class);
+                    int requests = mutableData.child(mNumPlate).child("requests").getValue(Integer.class);
+
+                    mutableData.child(mNumPlate).child("distance").setValue(distance + distanceTrip);
+                    mutableData.child(mNumPlate).child("requests").setValue(requests+1);
+
+                    return Transaction.success(mutableData);
                 } else {
-                    System.out.println("JE VAIS ECRIRE QQCH DE NOUVEAU ATTENTION !!!!!!!!!!!!");
-                    myRef.child(mNumPlate).child("distance").setValue(distanceTrip);
+                    mutableData.child(mNumPlate).child("distance").setValue(distanceTrip);
+                    mutableData.child(mNumPlate).child("requests").setValue(1);
+
+                    return Transaction.success(mutableData);
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println(databaseError.getMessage());
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                Log.d(TAG, "postTransaction:onComplete:" + databaseError);
             }
         });
 
-        // TODO: A CHANGER !!!!!!!!!
-        myRef.child(mNumPlate).child("distance").setValue(distanceTrip);
+        myRef = database.getReference("statistics").child(year).child("hitchhikers");
+
+        // update hitchhiker's data in statistics table
+        /*myRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+
+                if(mutableData.hasChild(mNumPlate)) {
+
+                    return Transaction.success(mutableData);
+                } else {
+
+
+                    return Transaction.success(mutableData);
+                }
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });*/
+
 
     }
 
