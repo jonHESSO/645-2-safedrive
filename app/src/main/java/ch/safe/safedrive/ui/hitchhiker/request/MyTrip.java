@@ -34,6 +34,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -406,23 +407,26 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
         updateRequest(mNumRequest);
 
         myRef = database.getReference("requests").child(mNumRequest);
+        myRef.child("distance").setValue(distanceTrip);
 
         // create the trip on firebase
         for(Map.Entry<Date, Location> entry : locationHashMap.entrySet()) {
             Date key = entry.getKey();
             Location value = entry.getValue();
 
-            myRef.child("trip").child(UUID.randomUUID().toString()).setValue(value);
+            myRef.child("trip").child(String.valueOf(key.getTime())).setValue(value);
         }
 
-        myRef = database.getReference("statistics").child(""+ Calendar.getInstance().get(Calendar.YEAR)).child("drivers");
+        String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+        myRef = database.getReference("statistics").child(year).child("drivers");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(mNumPlate)) {
+                if (dataSnapshot.child(mNumPlate).exists()) {
                     Double distance = dataSnapshot.child(mNumPlate).child("distance").getValue(Double.class);
-                    myRef.setValue(distanceTrip + distance);
+                    myRef.child(mNumPlate).child("distance").setValue(distanceTrip + distance);
                 } else {
+                    System.out.println("JE VAIS ECRIRE QQCH DE NOUVEAU ATTENTION !!!!!!!!!!!!");
                     myRef.child(mNumPlate).child("distance").setValue(distanceTrip);
                 }
             }
@@ -432,6 +436,9 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 System.out.println(databaseError.getMessage());
             }
         });
+
+        // TODO: A CHANGER !!!!!!!!!
+        myRef.child(mNumPlate).child("distance").setValue(distanceTrip);
 
     }
 
