@@ -104,7 +104,7 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     private Context context;
     private Timer timer;
     private TimerTask timerTask;
-    private int securityFrequency = 15000;
+    private int securityFrequency = 180000;
 
     private AlertDialog.Builder needHalp;
     private AlertDialog helpDialog ;
@@ -368,6 +368,11 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
     // show a little popup to be sure the user has reached his destination
     private void showPopup() {
 
+        if(snoozePopup)
+        {
+            return ;
+        }
+
         // destroy the location listener
         lm.removeUpdates(locationListener);
 
@@ -405,6 +410,17 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
 
                         // close the dialog
                         dialog.cancel();
+
+                        TimerTask timerTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                snoozePopup = false ;
+                            }
+                        };
+
+                        Timer timer = new Timer();
+                        timer.schedule(timerTask,10000);
+                        snoozePopup = true ;
 
 
                     }
@@ -603,17 +619,17 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
             }
         };
 
-            startTimer();
+        startTimer();
 
 
-        }
+    }
 
-        public void startTimer() {
+    public void startTimer() {
         if(timer != null) {
             return;
         }
         timer = new Timer();
-        timer.scheduleAtFixedRate(timerTask, 0, securityFrequency);
+        timer.scheduleAtFixedRate(timerTask, 2000, securityFrequency);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             needHalp = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
         } else {
@@ -644,10 +660,10 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                 .setIcon(android.R.drawable.ic_dialog_alert) ;
     }
 
-        public void stopTimer() {
+    public void stopTimer() {
         timer.cancel();
         timer = null;
     }
 
 
-    }
+}
