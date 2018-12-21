@@ -426,6 +426,27 @@ public class MyTrip extends Fragment implements OnMapReadyCallback {
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
+
+                        TimerTask timerTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                snoozePopup = false ;
+                            }
+                        };
+
+                        Timer timer = new Timer();
+                        timer.schedule(timerTask,10000);
+                        snoozePopup = true ;
+                    }
+                })
                 .show();
     }
 

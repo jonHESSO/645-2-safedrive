@@ -305,7 +305,7 @@ public class CreateRequest extends Fragment {
 
         mRequestHitchhiker.setId(UUID.randomUUID().toString());
         mRequestHitchhiker.setIdPlatePic(mIDPictureFireStore);
-        mRequestHitchhiker.setPlate(mEditTextNumPlate.getText().toString());
+        mRequestHitchhiker.setPlate(mEditTextNumPlate.getText().toString().replaceAll("\\s+",""));
         mRequestHitchhiker.setDate(new Date());
         mRequestHitchhiker.setLocationFrom(keyLocationFrom);
         mRequestHitchhiker.setLocationTo(keyLocationTo);
@@ -417,7 +417,11 @@ public class CreateRequest extends Fragment {
                     mbtnTakingPicture.setImageBitmap(bitmapTakingPicture);
 
                     // read the picture and try to set the plate in the textview
-                    mEditTextNumPlate.setText(readPicture(bitmapTakingPicture));
+                    String text = readPicture(bitmapTakingPicture) ;
+                    String input = mEditTextNumPlate.getText().toString();
+                    if(!text.equals("")&&input.equals("")) {
+                        mEditTextNumPlate.setText(text);
+                    }
 
                 }catch (Exception e){
                     e.printStackTrace();
