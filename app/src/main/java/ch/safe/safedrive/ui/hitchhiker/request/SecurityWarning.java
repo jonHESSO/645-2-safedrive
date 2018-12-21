@@ -7,6 +7,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
@@ -27,6 +30,7 @@ import java.util.List;
 import javax.mail.*;
 
 import ch.safe.safedrive.R;
+import ch.safe.safedrive.model.Location;
 import ch.safe.safedrive.model.User;
 
 /**
@@ -58,11 +62,21 @@ public class SecurityWarning extends Fragment {
     private Button mBtnCallPolice;
 
     private String userName ;
+    private String userEmailCU;
+    private String userEmail;
+    private String userFirstname;
+    private String phoneUser;
+
+    private Double latitudeUser;
+    private Double longuitudeUser;
 
     //Variable needed for email
     //private String nameUser = user.getDisplayName();
     private String [] emailAlert = {"alert.safedrive@gmail.com"};
     private String  textAlert ;
+
+
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -107,9 +121,72 @@ public class SecurityWarning extends Fragment {
 
         //The entry point for accessing a Firebase Database
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+
+
+
+    }
+
+
+
+    public String getLocation()
+    {
+        mDatabaseReference = mFirebaseDatabase.getReference("locations");
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+
+
+                        System.out.println("found");
+                        userFirstname = snapshot.child("latitude").getValue(String.class);
+                        userName = snapshot.child("longitude").getValue(String.class);
+
+
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        return latitudeUser + " " + longuitudeUser;
+    }
+
+    public void WriteMessageAlert()
+    {
         user = FirebaseAuth.getInstance().getCurrentUser();
-        userName = user.getEmail();
-        textAlert = "The user is in danger : " + userName;
+        userEmailCU = user.getEmail();
+
+        mDatabaseReference = mFirebaseDatabase.getReference("user");
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    //User user = snapshot.getValue(User.class);
+                    String email = snapshot.child("email").getValue(String.class);
+
+
+
+                    if(user.getEmail().equals(email) )
+                    {
+                        System.out.println("found");
+                        userFirstname = snapshot.child("firstname").getValue(String.class);
+                        userName = snapshot.child("lastname").getValue(String.class);
+
+                        textAlert = "The user " + userFirstname + " " + userName + " is in danger. Her location : " ;
+
+                    } else {
+                        System.out.println("nope");
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
 
     }
