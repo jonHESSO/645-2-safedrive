@@ -2,6 +2,7 @@ package ch.safe.safedrive.ui.login;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.renderscript.ScriptGroup;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -66,6 +67,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                  lastname = InputLastname.getText().toString();
                 firstname = InputFirstname.getText().toString();
                 lastname = InputLastname.getText().toString();
+                phone = InputPhone.getText().toString();
 
                 if(TextUtils.isEmpty(email)){
                     Toast.makeText(getApplicationContext(),"Please fill in the required fields",Toast.LENGTH_SHORT).show();
@@ -73,23 +75,31 @@ public class CreateAccountActivity extends AppCompatActivity {
                 }
                 if(TextUtils.isEmpty(password)){
                     Toast.makeText(getApplicationContext(),"Please fill in the required fields",Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 if(password.length()<6){
                     Toast.makeText(getApplicationContext(),"Password must be at least 6 characters",Toast.LENGTH_SHORT).show();
                 }
+
+
                 if (TextUtils.isEmpty(lastname)) {
-                    InputLastname.setError("Cannot be empty");
+                    InputLastname.setError("Lastname can not be empty");
                     return;
                 }
+
+
+
                 if (TextUtils.isEmpty(firstname)) {
-                    InputFirstname.setError("Cannot be empty");
+                    InputFirstname.setError("firstname can not be empty");
                     return;
                 }
-              /*  if (TextUtils.isEmpty(phone)) {
+
+                if (TextUtils.isEmpty(phone)) {
                     InputPhone.setError("Cannot be empty");
                     return;
-                }*/
+                }
+
 
                 //storeUser();
 
